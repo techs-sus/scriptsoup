@@ -22,7 +22,6 @@ owner.Chatted:Connect(function(message)
 	local command = string.split(message, "'")
 	if command[1] == "r" then
 		local source = get("/out/" .. command[2] .. ".lua")
-		-- eslint-disable-next-line roblox-ts/lua-truthiness
 		if source ~= "" and source then
 			NS(source, script)
 		else

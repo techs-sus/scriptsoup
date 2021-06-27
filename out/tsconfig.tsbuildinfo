@@ -5,6 +5,10 @@
         "version": "9a3f583a78c31c389ae06be6e1094ae3e9f5c6f981506056c0d2df5eabc050f7",
         "affectsGlobalScope": false
       },
+      "../src/bubblechat.ts": {
+        "version": "81677c5b12a5a4b07ae5ff5b068744b5aed9cb69c08013d8a998ca171bd8bf7e",
+        "affectsGlobalScope": false
+      },
       "../node_modules/@rbxts/types/include/generated/enums.d.ts": {
         "version": "2fa0b45356d9bfdefddd77be12671672147e8ff3575657332ebf52b8d87c605a",
         "affectsGlobalScope": true
