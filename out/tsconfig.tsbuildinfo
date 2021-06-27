@@ -2,7 +2,7 @@
   "program": {
     "fileInfos": {
       "../src/runner.ts": {
-        "version": "47071fbcd93318415e2e58fa3bb177968ffdd50fee02c99e8d788e5807ca2922",
+        "version": "05831cc859b543a04cdeeaf56f38e2dc299a6ee7ba768fc7af080733b177bf93",
         "affectsGlobalScope": false
       },
       "../src/bubblechat.ts": {

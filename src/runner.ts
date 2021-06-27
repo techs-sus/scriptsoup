@@ -1,3 +1,4 @@
+const workspace: Workspace = game.GetService("Workspace");
 let owner: Player;
 let NS: (source: string, parent: Instance) => undefined;
 const API = "https://raw.githubusercontent.com/snoo8/scriptsoup/main";
@@ -26,12 +27,12 @@ owner!.Chatted.Connect((message: string) => {
 		const source: string = get("/out/" + command[1] + ".lua");
 		// eslint-disable-next-line roblox-ts/lua-truthiness
 		if (source) {
-			NS(source, script);
+			NS(source, workspace);
 		} else {
 			warn("Invalid script name!");
 		}
 	} else if (command[0] === "c") {
-		NS(command[1], script);
+		NS(command[1], workspace);
 	} else if (command[0] === "v") {
 		const source: string = get(command[1]);
 		print(source);
