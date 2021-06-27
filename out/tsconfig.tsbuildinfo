@@ -6,7 +6,7 @@
         "affectsGlobalScope": false
       },
       "../src/runner.ts": {
-        "version": "d809e957ef2904264d6474bd655bd014eca46f7f1074b89e62b36bed543ff43d",
+        "version": "4a5e5fd9aea287ea2775346c587b4c09c731b7a35a2a0ee763b6f2c221df0415",
         "affectsGlobalScope": false
       },
       "../node_modules/@rbxts/types/include/generated/enums.d.ts": {
