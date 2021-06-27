@@ -1,9 +1,9 @@
-let NS: (source: string, parent: Instance) => void;
-let owner!: Player;
+let owner: Player;
+let NS: (source: string, parent: Instance) => undefined;
 const API = "https://raw.githubusercontent.com/snoo8/scriptsoup/main";
 const defaultHeaders = {
-	"Cache-Control": "no-cache"
-}
+	"Cache-Control": "no-cache",
+};
 
 const http = game.GetService("HttpService");
 
@@ -12,18 +12,19 @@ function get(endpoint: string): string {
 	const response = http.RequestAsync({
 		Url: url,
 		Method: "POST",
-		Headers: defaultHeaders
-	})
+		Headers: defaultHeaders,
+	});
 	if (!response.Success) {
 		warn("HTTP GET request failure:", url, response.StatusCode, response.StatusMessage);
 	}
 	return response.Body;
 }
 
-owner.Chatted.Connect((message: string) => {
+owner!.Chatted.Connect((message: string) => {
 	const command = message.split("'");
 	if (command[0] === "r") {
 		const source: string = get("/out/" + command[1] + ".lua");
+		// eslint-disable-next-line roblox-ts/lua-truthiness
 		if (source) {
 			NS(source, script);
 		} else {
@@ -35,6 +36,6 @@ owner.Chatted.Connect((message: string) => {
 		const source: string = get(command[1]);
 		print(source);
 	}
-})
+});
 
 export {};

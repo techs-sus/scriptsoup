@@ -2,7 +2,7 @@
   "program": {
     "fileInfos": {
       "../src/runner.ts": {
-        "version": "dc88aff499c145976f2a02513c573db5040099d1ef41da76690958da6c281647",
+        "version": "9a3f583a78c31c389ae06be6e1094ae3e9f5c6f981506056c0d2df5eabc050f7",
         "affectsGlobalScope": false
       },
       "../node_modules/@rbxts/types/include/generated/enums.d.ts": {
@@ -90,7 +90,6 @@
       "baseUrl": "../src",
       "incremental": true,
       "tsBuildInfoFile": "./tsconfig.tsbuildinfo",
-      "declaration": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
@@ -159,5 +158,5 @@
     "exportedModulesMap": {},
     "semanticDiagnosticsPerFile": []
   },
-  "version": "1.1.11.0.0"
+  "version": "1.1.11.0.0-85f026d140f7d8187b52d9222f809327b12581871cd76a05af544325978c2af5"
 }
