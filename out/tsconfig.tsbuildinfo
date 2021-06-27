@@ -1,12 +1,12 @@
 {
   "program": {
     "fileInfos": {
-      "../src/runner.ts": {
-        "version": "93fa2fc282a100cf88b7f9ff94d28a91b9b3c1a3e247ea32e98ae8e9867c3e82",
-        "affectsGlobalScope": false
-      },
       "../src/bubblechat.ts": {
         "version": "81677c5b12a5a4b07ae5ff5b068744b5aed9cb69c08013d8a998ca171bd8bf7e",
+        "affectsGlobalScope": false
+      },
+      "../src/runner.ts": {
+        "version": "d809e957ef2904264d6474bd655bd014eca46f7f1074b89e62b36bed543ff43d",
         "affectsGlobalScope": false
       },
       "../node_modules/@rbxts/types/include/generated/enums.d.ts": {
