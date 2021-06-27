@@ -9,6 +9,14 @@
         "version": "4a5e5fd9aea287ea2775346c587b4c09c731b7a35a2a0ee763b6f2c221df0415",
         "affectsGlobalScope": false
       },
+      "../src/chatlog.ts": {
+        "version": "be6283db26bd1645a6adbc5eb6af489709c81be044c5f4193ddfc186ee28fafb",
+        "affectsGlobalScope": false
+      },
+      "../src/soundlog.ts": {
+        "version": "867a16780a2dcee31a53d6d532e64d19e70bbbc439d3a37b8e99a946ba64b78c",
+        "affectsGlobalScope": false
+      },
       "../node_modules/@rbxts/types/include/generated/enums.d.ts": {
         "version": "2fa0b45356d9bfdefddd77be12671672147e8ff3575657332ebf52b8d87c605a",
         "affectsGlobalScope": true
