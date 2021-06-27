@@ -11,7 +11,7 @@ function get(endpoint: string): string {
 	const url = API + endpoint;
 	const response = http.RequestAsync({
 		Url: url,
-		Method: "POST",
+		Method: "GET",
 		Headers: defaultHeaders,
 	});
 	if (!response.Success) {

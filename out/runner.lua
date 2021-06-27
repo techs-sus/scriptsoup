@@ -1,6 +1,6 @@
 -- Compiled with roblox-ts v1.1.1
 local owner = owner
-local NS = NS
+local NS = owner
 local API = "https://raw.githubusercontent.com/snoo8/scriptsoup/main"
 local defaultHeaders = {
 	["Cache-Control"] = "no-cache",
@@ -10,7 +10,7 @@ local function get(endpoint)
 	local url = API .. endpoint
 	local response = http:RequestAsync({
 		Url = url,
-		Method = "POST",
+		Method = "GET",
 		Headers = defaultHeaders,
 	})
 	if not response.Success then
@@ -22,6 +22,7 @@ owner.Chatted:Connect(function(message)
 	local command = string.split(message, "'")
 	if command[1] == "r" then
 		local source = get("/out/" .. command[2] .. ".lua")
+		-- eslint-disable-next-line roblox-ts/lua-truthiness
 		if source ~= "" and source then
 			NS(source, script)
 		else
