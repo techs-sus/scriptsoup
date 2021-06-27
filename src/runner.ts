@@ -22,7 +22,7 @@ function get(endpoint: string): string {
 }
 
 owner!.Chatted.Connect((message: string) => {
-	const command = message.split("'");
+	const command = [message.sub(1, 1), message.sub(3, -1)];
 	if (command[0] === "r") {
 		const source: string = get("/out/" + command[1] + ".lua");
 		// eslint-disable-next-line roblox-ts/lua-truthiness

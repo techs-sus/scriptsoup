@@ -1,7 +1,7 @@
 -- Compiled with roblox-ts v1.1.1
 local workspace = game:GetService("Workspace")
-local owner = owner
-local NS = NS
+local owner
+local NS
 local API = "https://raw.githubusercontent.com/snoo8/scriptsoup/main"
 local defaultHeaders = {
 	["Cache-Control"] = "no-cache",
@@ -20,7 +20,7 @@ local function get(endpoint)
 	return response.Body
 end
 owner.Chatted:Connect(function(message)
-	local command = string.split(message, "'")
+	local command = { string.sub(message, 1, 1), string.sub(message, 3, -1) }
 	if command[1] == "r" then
 		local source = get("/out/" .. command[2] .. ".lua")
 		-- eslint-disable-next-line roblox-ts/lua-truthiness
