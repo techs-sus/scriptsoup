@@ -2,7 +2,7 @@
   "program": {
     "fileInfos": {
       "../src/runner.ts": {
-        "version": "2ccafc4c1426adfb74f586a034867c797d292afbfcfeebf006d2009932142050",
+        "version": "2b8b5d011b4d7d2ccbd664e5f4e8595e4504f02c2a6035484c60994de357c9b5",
         "affectsGlobalScope": false
       },
       "../node_modules/@rbxts/types/include/generated/enums.d.ts": {
