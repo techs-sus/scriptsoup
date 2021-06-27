@@ -1,7 +1,7 @@
 -- Compiled with roblox-ts v1.1.1
 local workspace = game:GetService("Workspace")
-local owner
-local NS
+local owner = owner
+local NS = NS
 local API = "https://raw.githubusercontent.com/snoo8/scriptsoup/main"
 local defaultHeaders = {
 	["Cache-Control"] = "no-cache",
