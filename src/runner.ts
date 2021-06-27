@@ -29,7 +29,7 @@ function show(text: string) {
 		screen.Transparency = 0.6;
 		screen.Reflectance = 0.2;
 		screen.Size = new Vector3(10, 7, 1);
-		screen.CFrame = head.CFrame.add(new Vector3(0, 0, -5));
+		screen.CFrame = head.CFrame.add(new Vector3(0, 0, 5));
 		screen.Anchored = true;
 
 		const gui: SurfaceGui = new Instance("SurfaceGui", screen);

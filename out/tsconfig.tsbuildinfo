@@ -5,12 +5,12 @@
         "version": "81677c5b12a5a4b07ae5ff5b068744b5aed9cb69c08013d8a998ca171bd8bf7e",
         "affectsGlobalScope": false
       },
-      "../src/runner.ts": {
-        "version": "4a5e5fd9aea287ea2775346c587b4c09c731b7a35a2a0ee763b6f2c221df0415",
-        "affectsGlobalScope": false
-      },
       "../src/chatlog.ts": {
         "version": "be6283db26bd1645a6adbc5eb6af489709c81be044c5f4193ddfc186ee28fafb",
+        "affectsGlobalScope": false
+      },
+      "../src/runner.ts": {
+        "version": "299a6a74554f2396bda0abd2c6199a2ba735c406edc947f86fc0a85d60faf573",
         "affectsGlobalScope": false
       },
       "../src/soundlog.ts": {

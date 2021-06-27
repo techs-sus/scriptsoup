@@ -30,7 +30,7 @@ local function show(text)
 		screen.Reflectance = 0.2
 		screen.Size = Vector3.new(10, 7, 1)
 		local _0 = head.CFrame
-		local _1 = Vector3.new(0, 0, -5)
+		local _1 = Vector3.new(0, 0, 5)
 		screen.CFrame = _0 + _1
 		screen.Anchored = true
 		local gui = Instance.new("SurfaceGui", screen)
