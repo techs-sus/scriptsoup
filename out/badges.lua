@@ -13,6 +13,9 @@ local badges = { {
 } }
 local function addBadges(character, player)
 	local humanoid = character:FindFirstChild("Humanoid")
+	if not humanoid then
+		return nil
+	end
 	local _0 = badges
 	local _1 = function(badge)
 		humanoid.DisplayName = (badge.check(player) and badge.badge or "") .. humanoid.DisplayName

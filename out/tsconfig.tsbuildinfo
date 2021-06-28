@@ -26,7 +26,7 @@
         "affectsGlobalScope": false
       },
       "../src/badges.ts": {
-        "version": "b941e763ebd888415a4fd40d9c69c7b32c7580a0dde754ba2420c575717cb657",
+        "version": "13793a701e816bc93da0968474b21d0ccfa5bce5f49d76a12c661a18fd670a19",
         "affectsGlobalScope": false
       },
       "../node_modules/@rbxts/types/include/generated/enums.d.ts": {

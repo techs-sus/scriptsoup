@@ -30,6 +30,9 @@ const badges = [
 
 function addBadges(character: Model, player: Player) {
 	const humanoid: Humanoid = character.FindFirstChild("Humanoid")! as Humanoid;
+	if (!humanoid) {
+		return;
+	}
 	badges.forEach((badge: badge) => {
 		humanoid.DisplayName = (badge.check(player) ? badge.badge : "") + humanoid.DisplayName;
 	});
