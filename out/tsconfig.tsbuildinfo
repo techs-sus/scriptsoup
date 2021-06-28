@@ -17,6 +17,14 @@
         "version": "867a16780a2dcee31a53d6d532e64d19e70bbbc439d3a37b8e99a946ba64b78c",
         "affectsGlobalScope": false
       },
+      "../src/sunset.ts": {
+        "version": "ccf3c3d725716d5509b7e54e06a53b3631d59d7e3a5db170fd78cb8036e2a6fb",
+        "affectsGlobalScope": false
+      },
+      "../src/toy.ts": {
+        "version": "7c1d1248747f303d7aae370c678af2c68a998431cf0b2793fcb4fc055607e943",
+        "affectsGlobalScope": false
+      },
       "../node_modules/@rbxts/types/include/generated/enums.d.ts": {
         "version": "2fa0b45356d9bfdefddd77be12671672147e8ff3575657332ebf52b8d87c605a",
         "affectsGlobalScope": true
