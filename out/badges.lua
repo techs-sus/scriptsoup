@@ -17,15 +17,43 @@ local function getVisits(id)
 	-- ▲ ReadonlyArray.forEach ▲
 	return visits
 end
-local badges = {
-	["🍰"] = function(player)
+local badges = { {
+	badge = "🍰",
+	check = function(player)
 		return player.AccountAge % 365 == 0
 	end,
-	["🧱"] = function(player)
+}, {
+	badge = "🧱",
+	check = function(player)
 		return player.AccountAge >= 365
 	end,
-	["🔨"] = function(player)
+}, {
+	badge = "🔨",
+	check = function(player)
 		return getVisits(player.UserId) > 2500
 	end,
-}
+} }
+local function addBadges(player)
+	player.CharacterAdded:Connect(function(char)
+		local hum = char:FindFirstChild("Humanoid")
+		local _0 = badges
+		local _1 = function(badge)
+			hum.DisplayName = (badge.check(player) and badge.badge or "") .. hum.DisplayName
+		end
+		-- ▼ ReadonlyArray.forEach ▼
+		for _2, _3 in ipairs(_0) do
+			_1(_3, _2 - 1, _0)
+		end
+		-- ▲ ReadonlyArray.forEach ▲
+	end)
+end
+local players = game:GetService("Players")
+local _0 = players:GetPlayers()
+local _1 = addBadges
+-- ▼ ReadonlyArray.forEach ▼
+for _2, _3 in ipairs(_0) do
+	_1(_3, _2 - 1, _0)
+end
+-- ▲ ReadonlyArray.forEach ▲
+players.PlayerAdded:Connect(addBadges)
 return nil

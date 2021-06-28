@@ -25,6 +25,11 @@ interface gameData {
 	isFavoritedByUser: boolean;
 }
 
+interface badge {
+	badge: string;
+	check: (player: Player) => boolean;
+}
+
 function getVisits(id: number) {
 	const games: Array<number> = http.JSONDecode(
 		http.GetAsync("https://games.rprxy.xyz/v2/users/" + id + "/games?accessFilter=Public&sortOrder=Asc&limit=100"),
@@ -41,16 +46,38 @@ function getVisits(id: number) {
 	return visits;
 }
 
-const badges = {
-	"🍰": (player: Player) => {
-		return player.AccountAge % 365 === 0;
+const badges = [
+	{
+		badge: "🍰",
+		check: (player: Player) => {
+			return player.AccountAge % 365 === 0;
+		},
 	},
-	"🧱": (player: Player) => {
-		return player.AccountAge >= 365;
+	{
+		badge: "🧱",
+		check: (player: Player) => {
+			return player.AccountAge >= 365;
+		},
 	},
-	"🔨": (player: Player) => {
-		return getVisits(player.UserId) > 2500;
+	{
+		badge: "🔨",
+		check: (player: Player) => {
+			return getVisits(player.UserId) > 2500;
+		},
 	},
-};
+];
+
+function addBadges(player: Player) {
+	player.CharacterAdded.Connect((char: Model) => {
+		const hum: Humanoid = char.FindFirstChild("Humanoid")! as Humanoid;
+		badges.forEach((badge: badge) => {
+			hum.DisplayName = (badge.check(player) ? badge.badge : "") + hum.DisplayName;
+		});
+	});
+}
+
+const players: Players = game.GetService("Players");
+players.GetPlayers().forEach(addBadges);
+players.PlayerAdded.Connect(addBadges);
 
 export {};
