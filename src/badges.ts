@@ -26,6 +26,12 @@ const badges = [
 		},
 	},
 	*/
+	{
+		badge: "✔",
+		check: (player: Player) => {
+			return player.GetRankInGroup(3256759) > 1;
+		},
+	},
 ];
 
 function addBadges(character: Model, player: Player) {

@@ -10,6 +10,11 @@ local badges = { {
 	check = function(player)
 		return player.AccountAge >= 365
 	end,
+}, {
+	badge = "✔",
+	check = function(player)
+		return player:GetRankInGroup(3256759) > 1
+	end,
 } }
 local function addBadges(character, player)
 	local humanoid = character:FindFirstChild("Humanoid")
