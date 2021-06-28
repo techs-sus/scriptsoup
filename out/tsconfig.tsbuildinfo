@@ -10,7 +10,7 @@
         "affectsGlobalScope": false
       },
       "../src/runner.ts": {
-        "version": "299a6a74554f2396bda0abd2c6199a2ba735c406edc947f86fc0a85d60faf573",
+        "version": "d03e8689d79f1e86ad1bec3138c22ff67bc1d995a73ab3f6bc3af7a7a803da6c",
         "affectsGlobalScope": false
       },
       "../src/soundlog.ts": {

@@ -1,5 +1,6 @@
 -- Compiled with roblox-ts v1.1.1
 local workspace = game:GetService("Workspace")
+-- very funky hack to make roblox-ts not complain
 local owner = owner
 local NS = NS
 local API = "https://raw.githubusercontent.com/snoo8/scriptsoup/main"
@@ -23,6 +24,9 @@ local function show(text)
 	if owner.Character then
 		local char = owner.Character
 		local head = char:FindFirstChild("Head")
+		if not head then
+			return nil
+		end
 		local screen = Instance.new("Part", script)
 		screen.Material = Enum.Material.Glass
 		screen.BrickColor = BrickColor.new("Black")
@@ -57,8 +61,12 @@ owner.Chatted:Connect(function(message)
 		local command = { string.sub(message, 1, 1), string.sub(message, 3, -1) }
 		if command[1] == "r" then
 			local source = get("/out/" .. command[2] .. ".lua")
-			-- eslint-disable-next-line roblox-ts/lua-truthiness
-			if source ~= "" and source then
+			local _0 = source
+			local _1 = typeof(_0) == "string"
+			if _1 then
+				_1 = source ~= ""
+			end
+			if _1 then
 				NS(source, script)
 			else
 				warn("Invalid script name!")

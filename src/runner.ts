@@ -1,4 +1,5 @@
 const workspace: Workspace = game.GetService("Workspace");
+// very funky hack to make roblox-ts not complain
 let owner!: Player;
 let NS: (source: string, parent: Instance) => undefined;
 const API = "https://raw.githubusercontent.com/snoo8/scriptsoup/main";
@@ -21,7 +22,8 @@ function get(endpoint: string): string {
 function show(text: string) {
 	if (owner.Character) {
 		const char: Model = owner.Character!;
-		const head: BasePart = char.FindFirstChild("Head") as BasePart;
+		const head: BasePart | undefined = char.FindFirstChild("Head") as BasePart;
+		if (!head) return;
 
 		const screen: Part = new Instance("Part", script);
 		screen.Material = Enum.Material.Glass;
@@ -58,8 +60,7 @@ owner.Chatted.Connect((message: string) => {
 		const command = [message.sub(1, 1), message.sub(3, -1)];
 		if (command[0] === "r") {
 			const source: string = get("/out/" + command[1] + ".lua");
-			// eslint-disable-next-line roblox-ts/lua-truthiness
-			if (source) {
+			if (typeOf(source) === "string" && source !== "") {
 				NS(source, script);
 			} else {
 				warn("Invalid script name!");
