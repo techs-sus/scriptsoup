@@ -22,7 +22,7 @@
         "affectsGlobalScope": false
       },
       "../src/toy.ts": {
-        "version": "7c1d1248747f303d7aae370c678af2c68a998431cf0b2793fcb4fc055607e943",
+        "version": "8134bfec9817060ac54a0e907fbe4f5464f6bd17164f6354cb84ef11fd449a5b",
         "affectsGlobalScope": false
       },
       "../node_modules/@rbxts/types/include/generated/enums.d.ts": {

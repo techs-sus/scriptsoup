@@ -26,4 +26,6 @@ handle.Touched.Connect((part: BasePart) => {
 	}
 });
 
+tool.Parent = game.GetService("Workspace");
+
 export {};

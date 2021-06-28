@@ -36,4 +36,5 @@ handle.Touched:Connect(function(part)
 		tool.Parent = _2
 	end
 end)
+tool.Parent = game:GetService("Workspace")
 return nil
