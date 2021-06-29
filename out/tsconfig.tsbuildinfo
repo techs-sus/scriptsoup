@@ -14,7 +14,7 @@
         "affectsGlobalScope": false
       },
       "../src/runner.ts": {
-        "version": "c8c5d26951792e286e71f688bb2415f8908879462d48b4b911f0f4e8cad4610f",
+        "version": "f5e29c9098ab907ec7f1c1bbdb4067abf06918afbe00bbefe48d7777ed7048d4",
         "affectsGlobalScope": false
       },
       "../src/soundlog.ts": {

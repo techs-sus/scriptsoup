@@ -1,12 +1,42 @@
 declare const owner: Player;
 declare const NS: (source: string, parent: Instance) => undefined;
 
+type command = (args: string[]) => undefined;
+
 const workspace: Workspace = game.GetService("Workspace");
 const API = "https://raw.githubusercontent.com/snoo8/scriptsoup/main";
 const defaultHeaders = {
 	"Cache-Control": "no-cache",
 };
 const http = game.GetService("HttpService");
+const commands: { [type: string]: command } = {
+	size: (args: string[]) => {
+		const char: Model = owner.Character as Model;
+		if (!char) {
+			warn("no character");
+			return;
+		}
+		const hum: Humanoid = char.FindFirstChild("Humanoid") as Humanoid;
+		if (!hum) {
+			warn("no humanoid");
+			return;
+		}
+		if (hum.RigType !== Enum.HumanoidRigType.R15) {
+			warn("not r15");
+			return;
+		}
+		const width: NumberValue = hum.FindFirstChild("BodyWidthScale") as NumberValue;
+		const heigth: NumberValue = hum.FindFirstChild("BodyHeightScale") as NumberValue;
+		const depth: NumberValue = hum.FindFirstChild("BodyDepthScale") as NumberValue;
+		const head: NumberValue = hum.FindFirstChild("HeadScale") as NumberValue;
+		const scale: number = tonumber(args[1]) as number;
+		width.Value = scale;
+		heigth.Value = scale;
+		depth.Value = scale;
+		head.Value = scale;
+		return undefined;
+	},
+};
 function get(endpoint: string): string {
 	const url = API + endpoint;
 	const response = http.RequestAsync({
@@ -58,20 +88,34 @@ function show(text: string) {
 owner.Chatted.Connect((message: string) => {
 	if (message.sub(2, 2) === "'") {
 		const command = [message.sub(1, 1), message.sub(3, -1)];
-		if (command[0] === "r") {
-			const source: string = get("/out/" + command[1] + ".lua");
-			if (typeOf(source) === "string" && source !== "") {
-				NS(source, script);
-			} else {
-				warn("Invalid script name!");
-			}
-		} else if (command[0] === "c") {
-			NS(command[1], script);
-		} else if (command[0] === "v") {
-			const source: string = get(command[1]);
-			show(source);
-		} else if (command[0] === "q") {
-			script.ClearAllChildren();
+		const split: string[] = command[1].split("'");
+		switch (command[0]) {
+			case "r":
+				const requested: string = get("/out/" + command[1] + ".lua");
+				if (typeOf(requested) === "string" && requested !== "") {
+					NS(requested, script);
+				} else {
+					warn("Invalid script name!");
+				}
+				break;
+			case "q":
+				NS(command[1], script);
+				break;
+			case "v":
+				const source: string = get(command[1]);
+				show(source);
+				break;
+			case "c":
+				script.ClearAllChildren();
+				break;
+			case "a":
+				const targetCommand: command = commands[split[0]] as command;
+				if (targetCommand === undefined) {
+					warn("invalid command");
+					return;
+				}
+				targetCommand(split);
+				break;
 		}
 	}
 });

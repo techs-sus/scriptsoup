@@ -5,6 +5,34 @@ local defaultHeaders = {
 	["Cache-Control"] = "no-cache",
 }
 local http = game:GetService("HttpService")
+local commands = {
+	size = function(args)
+		local char = owner.Character
+		if not char then
+			warn("no character")
+			return nil
+		end
+		local hum = char:FindFirstChild("Humanoid")
+		if not hum then
+			warn("no humanoid")
+			return nil
+		end
+		if hum.RigType ~= Enum.HumanoidRigType.R15 then
+			warn("not r15")
+			return nil
+		end
+		local width = hum:FindFirstChild("BodyWidthScale")
+		local heigth = hum:FindFirstChild("BodyHeightScale")
+		local depth = hum:FindFirstChild("BodyDepthScale")
+		local head = hum:FindFirstChild("HeadScale")
+		local scale = tonumber(args[2])
+		width.Value = scale
+		heigth.Value = scale
+		depth.Value = scale
+		head.Value = scale
+		return nil
+	end,
+}
 local function get(endpoint)
 	local url = API .. endpoint
 	local response = http:RequestAsync({
@@ -56,26 +84,46 @@ end
 owner.Chatted:Connect(function(message)
 	if string.sub(message, 2, 2) == "'" then
 		local command = { string.sub(message, 1, 1), string.sub(message, 3, -1) }
-		if command[1] == "r" then
-			local source = get("/out/" .. command[2] .. ".lua")
-			local _0 = source
-			local _1 = typeof(_0) == "string"
-			if _1 then
-				_1 = source ~= ""
+		local split = string.split(command[2], "'")
+		local _0 = command[1]
+		repeat
+			if _0 == ("r") then
+				local requested = get("/out/" .. command[2] .. ".lua")
+				local _1 = requested
+				local _2 = typeof(_1) == "string"
+				if _2 then
+					_2 = requested ~= ""
+				end
+				if _2 then
+					NS(requested, script)
+				else
+					warn("Invalid script name!")
+				end
+				break
 			end
-			if _1 then
-				NS(source, script)
-			else
-				warn("Invalid script name!")
+			if _0 == ("q") then
+				NS(command[2], script)
+				break
 			end
-		elseif command[1] == "c" then
-			NS(command[2], script)
-		elseif command[1] == "v" then
-			local source = get(command[2])
-			show(source)
-		elseif command[1] == "q" then
-			script:ClearAllChildren()
-		end
+			if _0 == ("v") then
+				local source = get(command[2])
+				show(source)
+				break
+			end
+			if _0 == ("c") then
+				script:ClearAllChildren()
+				break
+			end
+			if _0 == ("a") then
+				local targetCommand = commands[split[1]]
+				if targetCommand == nil then
+					warn("invalid command")
+					return nil
+				end
+				targetCommand(split)
+				break
+			end
+		until true
 	end
 end)
 return nil
