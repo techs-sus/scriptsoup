@@ -1,7 +1,7 @@
+declare const owner: Player;
+declare const NS: (source: string, parent: Instance) => undefined;
+
 const workspace: Workspace = game.GetService("Workspace");
-// very funky hack to make roblox-ts not complain
-let owner!: Player;
-let NS: (source: string, parent: Instance) => undefined;
 const API = "https://raw.githubusercontent.com/snoo8/scriptsoup/main";
 const defaultHeaders = {
 	"Cache-Control": "no-cache",

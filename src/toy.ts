@@ -1,4 +1,4 @@
-let owner!: Player;
+declare const owner: Player;
 const char: Model = owner.Character! as Model;
 const hum: Humanoid = char.FindFirstChild("Humanoid") as Humanoid;
 const torso: BasePart = (char.FindFirstChild("Torso") || char.FindFirstChild("UpperTorso")) as BasePart;

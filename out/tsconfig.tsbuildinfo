@@ -1,6 +1,10 @@
 {
   "program": {
     "fileInfos": {
+      "../src/badges.ts": {
+        "version": "2f3a2152c08bde3b849d0d89bc048eed1ad590fdda72c3b2a0749502370823a6",
+        "affectsGlobalScope": false
+      },
       "../src/bubblechat.ts": {
         "version": "81677c5b12a5a4b07ae5ff5b068744b5aed9cb69c08013d8a998ca171bd8bf7e",
         "affectsGlobalScope": false
@@ -10,7 +14,7 @@
         "affectsGlobalScope": false
       },
       "../src/runner.ts": {
-        "version": "d03e8689d79f1e86ad1bec3138c22ff67bc1d995a73ab3f6bc3af7a7a803da6c",
+        "version": "c8c5d26951792e286e71f688bb2415f8908879462d48b4b911f0f4e8cad4610f",
         "affectsGlobalScope": false
       },
       "../src/soundlog.ts": {
@@ -22,11 +26,7 @@
         "affectsGlobalScope": false
       },
       "../src/toy.ts": {
-        "version": "8134bfec9817060ac54a0e907fbe4f5464f6bd17164f6354cb84ef11fd449a5b",
-        "affectsGlobalScope": false
-      },
-      "../src/badges.ts": {
-        "version": "2f3a2152c08bde3b849d0d89bc048eed1ad590fdda72c3b2a0749502370823a6",
+        "version": "6ea785d8d58d0cf6d8ec47963258d43634a3eae254b6e6fda41018c1ce8166ae",
         "affectsGlobalScope": false
       },
       "../node_modules/@rbxts/types/include/generated/enums.d.ts": {

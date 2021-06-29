@@ -1,5 +1,4 @@
 -- Compiled with roblox-ts v1.1.1
-local owner = owner
 local char = owner.Character
 local hum = char:FindFirstChild("Humanoid")
 local torso = (char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso"))
