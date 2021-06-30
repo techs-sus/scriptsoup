@@ -13,8 +13,12 @@
         "version": "be6283db26bd1645a6adbc5eb6af489709c81be044c5f4193ddfc186ee28fafb",
         "affectsGlobalScope": false
       },
+      "../src/pvp.ts": {
+        "version": "f7358e8ea858def7274c040cfbedac31a45e4b25a1b6eb891b0e18cc43a2e26b",
+        "affectsGlobalScope": false
+      },
       "../src/runner.ts": {
-        "version": "f5e29c9098ab907ec7f1c1bbdb4067abf06918afbe00bbefe48d7777ed7048d4",
+        "version": "88885cbd30e430927984abd3cea03de56b3e542304680f8561bf85708d485f75",
         "affectsGlobalScope": false
       },
       "../src/soundlog.ts": {

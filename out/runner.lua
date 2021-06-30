@@ -87,14 +87,15 @@ owner.Chatted:Connect(function(message)
 		local split = string.split(command[2], "'")
 		local _0 = command[1]
 		repeat
+			local _1 = false
 			if _0 == ("r") then
 				local requested = get("/out/" .. command[2] .. ".lua")
-				local _1 = requested
-				local _2 = typeof(_1) == "string"
-				if _2 then
-					_2 = requested ~= ""
+				local _2 = requested
+				local _3 = typeof(_2) == "string"
+				if _3 then
+					_3 = requested ~= ""
 				end
-				if _2 then
+				if _3 then
 					NS(requested, script)
 				else
 					warn("Invalid script name!")
@@ -122,6 +123,9 @@ owner.Chatted:Connect(function(message)
 				end
 				targetCommand(split)
 				break
+			end
+			if _0 == ("e") then
+				print(loadstring("return " .. command[2])())
 			end
 		until true
 	end

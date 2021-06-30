@@ -1,5 +1,6 @@
 declare const owner: Player;
 declare const NS: (source: string, parent: Instance) => undefined;
+declare const loadstring: (source: string) => Function;
 
 type command = (args: string[]) => undefined;
 
@@ -116,6 +117,8 @@ owner.Chatted.Connect((message: string) => {
 				}
 				targetCommand(split);
 				break;
+			case "e":
+				print(loadstring("return " + command[1])());
 		}
 	}
 });
