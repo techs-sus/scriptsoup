@@ -92,12 +92,12 @@ ms.SubscribeAsync("rorc2", (message: unknown) => {
 	const author: string = game.GetService("Players").GetNameFromUserIdAsync(request.Author)!;
 	const messagetype: string = request.Type;
 	if (messagetype === "text") {
-		const content = text.FilterStringAsync(request.Content, request.Author)!.GetChatForUserAsync(request.Author);
+		const content = text.FilterStringAsync(request.Content, owner.UserId)!.GetChatForUserAsync(owner.UserId);
 		const box = output(`[${author}]: ${content!}`);
 	} else if (messagetype === "welcome") {
 		const box = output(`Welcome, ${author}! Say "/help" in the chat for a list of commands.`);
 	} else {
-		const comment = text.FilterStringAsync(request.Comment!, request.Author)!.GetChatForUserAsync(request.Author);
+		const comment = text.FilterStringAsync(request.Comment!, owner.UserId)!.GetChatForUserAsync(owner.UserId);
 		const box = output(`[${author}]: ${comment!}`);
 		if (messagetype === "image") {
 			print("image: " + request.Content);

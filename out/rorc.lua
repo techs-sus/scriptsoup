@@ -76,12 +76,12 @@ ms:SubscribeAsync("rorc2", function(message)
 	local author = game:GetService("Players"):GetNameFromUserIdAsync(request.Author)
 	local messagetype = request.Type
 	if messagetype == "text" then
-		local content = text:FilterStringAsync(request.Content, request.Author):GetChatForUserAsync(request.Author)
+		local content = text:FilterStringAsync(request.Content, owner.UserId):GetChatForUserAsync(owner.UserId)
 		local box = output("[" .. author .. "]: " .. content)
 	elseif messagetype == "welcome" then
 		local box = output("Welcome, " .. author .. '! Say "/help" in the chat for a list of commands.')
 	else
-		local comment = text:FilterStringAsync(request.Comment, request.Author):GetChatForUserAsync(request.Author)
+		local comment = text:FilterStringAsync(request.Comment, owner.UserId):GetChatForUserAsync(owner.UserId)
 		local box = output("[" .. author .. "]: " .. comment)
 		if messagetype == "image" then
 			print("image: " .. request.Content)
