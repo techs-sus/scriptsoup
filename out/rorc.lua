@@ -129,6 +129,9 @@ local function subscribe(name)
 			local box = output(tag .. content)
 		elseif messagetype == "welcome" then
 			local box = output("Welcome, " .. author .. '! Say "/rchelp" in the chat for a list of commands.')
+		elseif messagetype == "status" then
+			local comment = text:FilterStringAsync(request.Comment, owner.UserId):GetChatForUserAsync(owner.UserId)
+			local box = output(author .. "s new status is " .. comment)
 		else
 			local comment = text:FilterStringAsync(request.Comment, owner.UserId):GetChatForUserAsync(owner.UserId)
 			local box = output(tag .. comment)
@@ -203,11 +206,15 @@ local _3 = function(player)
 			output("/image rbxassetid://[id] [comment] - send an image")
 			output("/sound rbxassetid://[id] [comment] - send a sound")
 			output("/switch [name] - switch to another channel")
+			output("/status [status] - change your status")
 			output("---------------------------------------------------")
 		elseif string.sub(command, 1, 8) == "/switch " then
 			channel = string.sub(command, 9, -1)
 			subscribe(channel)
 			send("", "welcome", owner.UserId, "")
+		elseif string.sub(command, 1, 8) == "/status " then
+			local status = string.sub(command, 9, -1)
+			send("", "status", owner.UserId, status)
 		end
 	end)
 end

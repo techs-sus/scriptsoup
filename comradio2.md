@@ -14,6 +14,7 @@ The official comradio client supports the following message types, but you can a
 * text
 * image
 * sound
+* status
 * welcome (used internally)
 
 Example:

@@ -16,7 +16,7 @@ interface subscribeCallback {
 }
 
 interface comradioProtocol {
-	Type: "text" | "image" | "welcome" | "sound";
+	Type: "text" | "image" | "welcome" | "sound" | "status";
 	Content: string;
 	Comment: string;
 	Author: number;
@@ -118,7 +118,12 @@ function output(text: string) {
 
 	return box;
 }
-function send(message: string, messagetype: "text" | "image" | "welcome" | "sound", author: number, comment: string) {
+function send(
+	message: string,
+	messagetype: "text" | "image" | "welcome" | "sound" | "status",
+	author: number,
+	comment: string,
+) {
 	print("sending message as " + author);
 	const request: comradioProtocol = {
 		Author: author,
@@ -147,6 +152,9 @@ function subscribe(name: string) {
 			const box = output(tag + content);
 		} else if (messagetype === "welcome") {
 			const box = output(`Welcome, ${author}! Say "/rchelp" in the chat for a list of commands.`);
+		} else if (messagetype === "status") {
+			const comment = text.FilterStringAsync(request.Comment!, owner.UserId)!.GetChatForUserAsync(owner.UserId);
+			const box = output(`${author}s new status is ${comment}`);
 		} else {
 			const comment = text.FilterStringAsync(request.Comment!, owner.UserId)!.GetChatForUserAsync(owner.UserId);
 			const box = output(tag + comment);
@@ -210,11 +218,15 @@ players.GetPlayers().forEach((player: Player) => {
 			output("/image rbxassetid://[id] [comment] - send an image");
 			output("/sound rbxassetid://[id] [comment] - send a sound");
 			output("/switch [name] - switch to another channel");
+			output("/status [status] - change your status");
 			output("---------------------------------------------------");
 		} else if (command.sub(1, 8) === "/switch ") {
 			channel = command.sub(9, -1);
 			subscribe(channel);
 			send("", "welcome", owner.UserId, "");
+		} else if (command.sub(1, 8) === "/status ") {
+			const status = command.sub(9, -1);
+			send("", "status", owner.UserId, status);
 		}
 	});
 });
