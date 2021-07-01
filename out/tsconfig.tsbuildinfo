@@ -17,8 +17,8 @@
         "version": "f7358e8ea858def7274c040cfbedac31a45e4b25a1b6eb891b0e18cc43a2e26b",
         "affectsGlobalScope": false
       },
-      "../src/radio.ts": {
-        "version": "b35419a826831e2358d3138cbfd5ba438eebc4efca7d0fccbcee40a3c31aa93e",
+      "../src/rorc.ts": {
+        "version": "7a60527068f411d3587cfbae9cac3abf245c9ae886e56e868036c76d39f94361",
         "affectsGlobalScope": false
       },
       "../src/runner.ts": {
