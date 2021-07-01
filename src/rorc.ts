@@ -141,7 +141,7 @@ ms.SubscribeAsync("rorc2", (message: unknown) => {
 		const content = text.FilterStringAsync(request.Content, owner.UserId)!.GetChatForUserAsync(owner.UserId);
 		const box = output(tag + content);
 	} else if (messagetype === "welcome") {
-		const box = output(`Welcome, ${author}! Say "/help" in the chat for a list of commands.`);
+		const box = output(`Welcome, ${author}! Say "/rchelp" in the chat for a list of commands.`);
 	} else {
 		const comment = text.FilterStringAsync(request.Comment!, owner.UserId)!.GetChatForUserAsync(owner.UserId);
 		const box = output(tag + comment);
@@ -196,6 +196,12 @@ players.GetPlayers().forEach((player: Player) => {
 			const split = command.sub(8, -1).split(" ");
 			// eslint-disable-next-line roblox-ts/lua-truthiness
 			send(split[0], "sound", player.UserId, split[1] || "");
+		} else if (command.sub(1, 7) === "/rchelp") {
+			output("--------------------- help ------------------------");
+			output("/send [message] - send a text message");
+			output("/image rbxassetid://[id] [comment] - send an image");
+			output("/sound rbxassetid://[id] [comment] - send a sound");
+			output("---------------------------------------------------");
 		}
 	});
 });
