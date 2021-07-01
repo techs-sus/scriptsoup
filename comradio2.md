@@ -1,8 +1,8 @@
 # COMRADIO PROTOCOL v2
 
-comradio is a Discord-like platform where you can
-talk with anyone in any server, as long as you are
-in the same game.
+comradio is an IRC-like platform with some extra 
+benefits where you can talk with anyone in any 
+server, as long as you are in the same game.
 
 All messages must be sent as a dictionary containing these values:
 Type: type of message (see section below)
