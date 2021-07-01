@@ -121,7 +121,7 @@ ms:SubscribeAsync("rorc2", function(message)
 		local content = text:FilterStringAsync(request.Content, owner.UserId):GetChatForUserAsync(owner.UserId)
 		local box = output(tag .. content)
 	elseif messagetype == "welcome" then
-		local box = output("Welcome, " .. author .. '! Say "/help" in the chat for a list of commands.')
+		local box = output("Welcome, " .. author .. '! Say "/rchelp" in the chat for a list of commands.')
 	else
 		local comment = text:FilterStringAsync(request.Comment, owner.UserId):GetChatForUserAsync(owner.UserId)
 		local box = output(tag .. comment)
@@ -188,6 +188,12 @@ local _3 = function(player)
 				_6 = ""
 			end
 			send(_4, "sound", _5, _6)
+		elseif string.sub(command, 1, 7) == "/rchelp" then
+			output("--------------------- help ------------------------")
+			output("/send [message] - send a text message")
+			output("/image rbxassetid://[id] [comment] - send an image")
+			output("/sound rbxassetid://[id] [comment] - send a sound")
+			output("---------------------------------------------------")
 		end
 	end)
 end
