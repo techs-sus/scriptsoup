@@ -138,18 +138,20 @@ ms.SubscribeAsync("rorc2", (message: unknown) => {
 send("", "welcome", owner.UserId, "");
 output("Using rorc v4 compliant with comradio Protocol v2");
 
-owner.Chatted.Connect((command: string) => {
-	if (command.sub(1, 6) === "/send ") {
-		send(command.sub(7, -1), "text", owner.UserId, "");
-	} else if (command.sub(1, 7) === "/image ") {
-		const split = command.sub(8, -1).split(" ");
-		// eslint-disable-next-line roblox-ts/lua-truthiness
-		send(split[0], "image", owner.UserId, split[1] || "");
-	} else if (command.sub(1, 7) === "/sound ") {
-		const split = command.sub(8, -1).split(" ");
-		// eslint-disable-next-line roblox-ts/lua-truthiness
-		send(split[0], "sound", owner.UserId, split[1] || "");
-	}
+players.GetPlayers().forEach((player: Player) => {
+	player.Chatted.Connect((command: string) => {
+		if (command.sub(1, 6) === "/send ") {
+			send(command.sub(7, -1), "text", player.UserId, "");
+		} else if (command.sub(1, 7) === "/image ") {
+			const split = command.sub(8, -1).split(" ");
+			// eslint-disable-next-line roblox-ts/lua-truthiness
+			send(split[0], "image", player.UserId, split[1] || "");
+		} else if (command.sub(1, 7) === "/sound ") {
+			const split = command.sub(8, -1).split(" ");
+			// eslint-disable-next-line roblox-ts/lua-truthiness
+			send(split[0], "sound", player.UserId, split[1] || "");
+		}
+	});
 });
 
 export {};

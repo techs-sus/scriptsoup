@@ -121,29 +121,37 @@ ms:SubscribeAsync("rorc2", function(message)
 end)
 send("", "welcome", owner.UserId, "")
 output("Using rorc v4 compliant with comradio Protocol v2")
-owner.Chatted:Connect(function(command)
-	if string.sub(command, 1, 6) == "/send " then
-		send(string.sub(command, 7, -1), "text", owner.UserId, "")
-	elseif string.sub(command, 1, 7) == "/image " then
-		local split = string.split(string.sub(command, 8, -1), " ")
-		-- eslint-disable-next-line roblox-ts/lua-truthiness
-		local _2 = split[1]
-		local _3 = owner.UserId
-		local _4 = split[2]
-		if not (_4 ~= "" and _4) then
-			_4 = ""
+local _2 = players:GetPlayers()
+local _3 = function(player)
+	player.Chatted:Connect(function(command)
+		if string.sub(command, 1, 6) == "/send " then
+			send(string.sub(command, 7, -1), "text", player.UserId, "")
+		elseif string.sub(command, 1, 7) == "/image " then
+			local split = string.split(string.sub(command, 8, -1), " ")
+			-- eslint-disable-next-line roblox-ts/lua-truthiness
+			local _4 = split[1]
+			local _5 = player.UserId
+			local _6 = split[2]
+			if not (_6 ~= "" and _6) then
+				_6 = ""
+			end
+			send(_4, "image", _5, _6)
+		elseif string.sub(command, 1, 7) == "/sound " then
+			local split = string.split(string.sub(command, 8, -1), " ")
+			-- eslint-disable-next-line roblox-ts/lua-truthiness
+			local _4 = split[1]
+			local _5 = player.UserId
+			local _6 = split[2]
+			if not (_6 ~= "" and _6) then
+				_6 = ""
+			end
+			send(_4, "sound", _5, _6)
 		end
-		send(_2, "image", _3, _4)
-	elseif string.sub(command, 1, 7) == "/sound " then
-		local split = string.split(string.sub(command, 8, -1), " ")
-		-- eslint-disable-next-line roblox-ts/lua-truthiness
-		local _2 = split[1]
-		local _3 = owner.UserId
-		local _4 = split[2]
-		if not (_4 ~= "" and _4) then
-			_4 = ""
-		end
-		send(_2, "sound", _3, _4)
-	end
-end)
+	end)
+end
+-- ▼ ReadonlyArray.forEach ▼
+for _4, _5 in ipairs(_2) do
+	_3(_5, _4 - 1, _2)
+end
+-- ▲ ReadonlyArray.forEach ▲
 return nil
