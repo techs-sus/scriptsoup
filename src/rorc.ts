@@ -90,7 +90,8 @@ function output(text: string) {
 	box.BackgroundTransparency = 1;
 	box.TextColor3 = new Color3(1, 1, 1);
 	box.Text = text;
-	box.TextSize = 15;
+	box.Font = Enum.Font.SourceSans;
+	box.TextSize = 25;
 	box.RichText = true;
 	box.TextWrapped = true;
 	box.AutomaticSize = Enum.AutomaticSize.XY;
