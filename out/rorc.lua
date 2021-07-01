@@ -5,6 +5,45 @@ local players = game:GetService("Players")
 local http = game:GetService("HttpService")
 local char = owner.Character
 local head = char:FindFirstChild("Head")
+local NAME_COLORS = { Color3.new(), Color3.new(1 / 255, 162 / 255, 255 / 255), Color3.new(2 / 255, 184 / 255, 87 / 255), BrickColor.new("Bright violet").Color, BrickColor.new("Bright orange").Color, BrickColor.new("Bright yellow").Color, BrickColor.new("Light reddish violet").Color, BrickColor.new("Brick yellow").Color }
+local function GetNameValue(pName)
+	local value = 0
+	do
+		local _0 = 1
+		while _0 < #pName do
+			local index = _0
+			local cValue = { string.byte(string.sub(pName, index, index)) }
+			local reverseIndex = #pName - index + 1
+			if #pName % 2 == 1 then
+				reverseIndex = reverseIndex - 1
+			end
+			if reverseIndex % 4 >= 2 then
+				cValue[1] = -cValue[1]
+			end
+			value += cValue[1]
+			_0 = index
+			_0 += 1
+		end
+	end
+	return value
+end
+local function ComputeNameColor(pName)
+	return NAME_COLORS[GetNameValue(pName) % #NAME_COLORS + 1]
+end
+local function ExtractRGB(color)
+	local r = math.floor(color.R * 255)
+	local g = math.floor(color.G * 255)
+	local b = math.floor(color.B * 255)
+	return { r, g, b }
+end
+local function Format(text, color)
+	local rgb = ExtractRGB(color)
+	return '<font color="rgb(' .. tostring(rgb[1]) .. ", " .. tostring(rgb[2]) .. ", " .. tostring(rgb[3]) .. ')">' .. text .. "</font>"
+end
+local function Tags(name)
+	local tag = Format("[" .. name .. "]: ", ComputeNameColor(name))
+	return tag
+end
 local screen = Instance.new("Part", script)
 screen.Material = Enum.Material.Glass
 screen.BrickColor = BrickColor.new("Black")
@@ -12,7 +51,7 @@ screen.Transparency = 0.6
 screen.Reflectance = 0.2
 screen.Size = Vector3.new(10, 7, 1)
 local _0 = head.CFrame
-local _1 = Vector3.new(0, 0, 5)
+local _1 = Vector3.new(0, 0, -5)
 screen.CFrame = _0 + _1
 screen.Anchored = true
 local gui = Instance.new("SurfaceGui", screen)
@@ -75,14 +114,16 @@ ms:SubscribeAsync("rorc2", function(message)
 	print("type: " .. request.Type)
 	local author = game:GetService("Players"):GetNameFromUserIdAsync(request.Author)
 	local messagetype = request.Type
+	local tag = Tags(author)
+	print(tag)
 	if messagetype == "text" then
 		local content = text:FilterStringAsync(request.Content, owner.UserId):GetChatForUserAsync(owner.UserId)
-		local box = output("[" .. author .. "]: " .. content)
+		local box = output(tag .. content)
 	elseif messagetype == "welcome" then
 		local box = output("Welcome, " .. author .. '! Say "/help" in the chat for a list of commands.')
 	else
 		local comment = text:FilterStringAsync(request.Comment, owner.UserId):GetChatForUserAsync(owner.UserId)
-		local box = output("[" .. author .. "]: " .. comment)
+		local box = output(tag .. comment)
 		if messagetype == "image" then
 			print("image: " .. request.Content)
 			local image = Instance.new("ImageLabel")
@@ -120,7 +161,7 @@ ms:SubscribeAsync("rorc2", function(message)
 	end
 end)
 send("", "welcome", owner.UserId, "")
-output("Using rorc v4 compliant with comradio Protocol v2")
+output("Using rorc v6 compliant with comradio Protocol v2")
 local _2 = players:GetPlayers()
 local _3 = function(player)
 	player.Chatted:Connect(function(command)

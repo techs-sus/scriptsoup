@@ -20,13 +20,56 @@ interface comradioProtocol {
 	Author: number;
 }
 
+const NAME_COLORS = [
+	new Color3(), // new BrickColor("Bright red").Color,
+	new Color3(1 / 255, 162 / 255, 255 / 255), // new BrickColor("Bright blue").Color,
+	new Color3(2 / 255, 184 / 255, 87 / 255), // new BrickColor("Earth green").Color,
+	new BrickColor("Bright violet").Color,
+	new BrickColor("Bright orange").Color,
+	new BrickColor("Bright yellow").Color,
+	new BrickColor("Light reddish violet").Color,
+	new BrickColor("Brick yellow").Color,
+];
+function GetNameValue(pName: string) {
+	let value = 0;
+	for (let index = 1; index < pName.size(); index++) {
+		const cValue = string.byte(string.sub(pName, index, index));
+		let reverseIndex = pName.size() - index + 1;
+		if (pName.size() % 2 === 1) {
+			reverseIndex = reverseIndex - 1;
+		}
+		if (reverseIndex % 4 >= 2) {
+			cValue[0] = -cValue[0];
+		}
+		value += cValue[0];
+	}
+	return value;
+}
+function ComputeNameColor(pName: string) {
+	return NAME_COLORS[GetNameValue(pName) % NAME_COLORS.size()];
+}
+function ExtractRGB(color: Color3) {
+	const r: number = math.floor(color.R * 255);
+	const g: number = math.floor(color.G * 255);
+	const b: number = math.floor(color.B * 255);
+	return [r, g, b];
+}
+function Format(text: string, color: Color3) {
+	const rgb = ExtractRGB(color);
+	return `<font color="rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})">${text}</font>`;
+}
+function Tags(name: string) {
+	const tag = Format(`[${name}]: `, ComputeNameColor(name));
+	return tag;
+}
+
 const screen: Part = new Instance("Part", script);
 screen.Material = Enum.Material.Glass;
 screen.BrickColor = new BrickColor("Black");
 screen.Transparency = 0.6;
 screen.Reflectance = 0.2;
 screen.Size = new Vector3(10, 7, 1);
-screen.CFrame = head.CFrame.add(new Vector3(0, 0, 5));
+screen.CFrame = head.CFrame.add(new Vector3(0, 0, -5));
 screen.Anchored = true;
 
 const gui: SurfaceGui = new Instance("SurfaceGui", screen);
@@ -91,14 +134,16 @@ ms.SubscribeAsync("rorc2", (message: unknown) => {
 	print("type: " + request.Type);
 	const author: string = game.GetService("Players").GetNameFromUserIdAsync(request.Author)!;
 	const messagetype: string = request.Type;
+	const tag: string = Tags(author);
+	print(tag);
 	if (messagetype === "text") {
 		const content = text.FilterStringAsync(request.Content, owner.UserId)!.GetChatForUserAsync(owner.UserId);
-		const box = output(`[${author}]: ${content!}`);
+		const box = output(tag + content);
 	} else if (messagetype === "welcome") {
 		const box = output(`Welcome, ${author}! Say "/help" in the chat for a list of commands.`);
 	} else {
 		const comment = text.FilterStringAsync(request.Comment!, owner.UserId)!.GetChatForUserAsync(owner.UserId);
-		const box = output(`[${author}]: ${comment!}`);
+		const box = output(tag + comment);
 		if (messagetype === "image") {
 			print("image: " + request.Content);
 			const image = new Instance("ImageLabel");
@@ -136,7 +181,7 @@ ms.SubscribeAsync("rorc2", (message: unknown) => {
 	}
 });
 send("", "welcome", owner.UserId, "");
-output("Using rorc v4 compliant with comradio Protocol v2");
+output("Using rorc v6 compliant with comradio Protocol v2");
 
 players.GetPlayers().forEach((player: Player) => {
 	player.Chatted.Connect((command: string) => {
