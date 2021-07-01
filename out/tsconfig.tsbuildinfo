@@ -18,7 +18,7 @@
         "affectsGlobalScope": false
       },
       "../src/rorc.ts": {
-        "version": "e5e86888f87b55810a25e94f6f373432b6fd16aab358a131b54775c317537a8b",
+        "version": "9edb99360e233e22b566fdc6d730eeb502c932159ccf2d677171712a0c7dc708",
         "affectsGlobalScope": false
       },
       "../src/runner.ts": {

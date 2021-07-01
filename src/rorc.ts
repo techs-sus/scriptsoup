@@ -8,6 +8,8 @@ const http: HttpService = game.GetService("HttpService");
 const char: Model = owner.Character!;
 const head: BasePart | undefined = char.FindFirstChild("Head") as BasePart;
 
+let channel = "";
+
 interface subscribeCallback {
 	Data: string;
 	Sent: unknown;
@@ -124,63 +126,69 @@ function send(message: string, messagetype: "text" | "image" | "welcome" | "soun
 		Type: messagetype,
 		Comment: comment,
 	};
-	ms.PublishAsync("rorc2", http.JSONEncode(request));
+	ms.PublishAsync("comradio:" + channel, http.JSONEncode(request));
 }
 
-ms.SubscribeAsync("rorc2", (message: unknown) => {
-	const request: comradioProtocol = http.JSONDecode(
-		(message as subscribeCallback).Data as string,
-	) as comradioProtocol;
-	print("received message from " + request.Author);
-	print("type: " + request.Type);
-	const author: string = game.GetService("Players").GetNameFromUserIdAsync(request.Author)!;
-	const messagetype: string = request.Type;
-	const tag: string = Tags(author);
-	print(tag);
-	if (messagetype === "text") {
-		const content = text.FilterStringAsync(request.Content, owner.UserId)!.GetChatForUserAsync(owner.UserId);
-		const box = output(tag + content);
-	} else if (messagetype === "welcome") {
-		const box = output(`Welcome, ${author}! Say "/rchelp" in the chat for a list of commands.`);
-	} else {
-		const comment = text.FilterStringAsync(request.Comment!, owner.UserId)!.GetChatForUserAsync(owner.UserId);
-		const box = output(tag + comment);
-		if (messagetype === "image") {
-			print("image: " + request.Content);
-			const image = new Instance("ImageLabel");
-			image.Size = UDim2.fromOffset(300, 300);
-			image.Position = new UDim2(1, 0, 0, 10);
-			image.ScaleType = Enum.ScaleType.Fit;
-			image.Image = request.Content;
-			image.Parent = box;
-		} else if (messagetype === "sound") {
-			print("sound: " + request.Content);
-			const button = new Instance("TextButton");
-			button.Size = UDim2.fromOffset(50, 50);
-			button.Position = new UDim2(1, 0, 0, 10);
-			button.TextScaled = true;
-			button.BackgroundColor3 = new Color3(0.1, 0.51, 0.98);
-			button.Text = "▶";
-			button.Parent = box;
-			const sound = new Instance("Sound");
-			sound.SoundId = request.Content;
-			sound.Volume = 1;
-			sound.Looped = true;
-			sound.Parent = box;
-			let playing = false;
-			button.MouseButton1Click.Connect(() => {
-				playing = !playing;
-				if (playing) {
-					sound.Play();
-					button.Text = "⏸";
-				} else {
-					sound.Pause();
-					button.Text = "▶";
-				}
-			});
+let subscription: RBXScriptConnection;
+function subscribe(name: string) {
+	subscription?.Disconnect();
+	subscription = ms.SubscribeAsync("comradio:" + name, (message: unknown) => {
+		const request: comradioProtocol = http.JSONDecode(
+			(message as subscribeCallback).Data as string,
+		) as comradioProtocol;
+		print("received message from " + request.Author);
+		print("type: " + request.Type);
+		const author: string = game.GetService("Players").GetNameFromUserIdAsync(request.Author)!;
+		const messagetype: string = request.Type;
+		const tag: string = Tags(author);
+		print(tag);
+		if (messagetype === "text") {
+			const content = text.FilterStringAsync(request.Content, owner.UserId)!.GetChatForUserAsync(owner.UserId);
+			const box = output(tag + content);
+		} else if (messagetype === "welcome") {
+			const box = output(`Welcome, ${author}! Say "/rchelp" in the chat for a list of commands.`);
+		} else {
+			const comment = text.FilterStringAsync(request.Comment!, owner.UserId)!.GetChatForUserAsync(owner.UserId);
+			const box = output(tag + comment);
+			if (messagetype === "image") {
+				print("image: " + request.Content);
+				const image = new Instance("ImageLabel");
+				image.Size = UDim2.fromOffset(300, 300);
+				image.Position = new UDim2(0, 5, 0, 25);
+				image.ScaleType = Enum.ScaleType.Fit;
+				image.Image = request.Content;
+				image.Parent = box;
+			} else if (messagetype === "sound") {
+				print("sound: " + request.Content);
+				const button = new Instance("TextButton");
+				button.Size = UDim2.fromOffset(50, 50);
+				button.Position = new UDim2(0, 5, 0, 25);
+				button.TextScaled = true;
+				button.BackgroundColor3 = new Color3(0.1, 0.51, 0.98);
+				button.Text = "▶";
+				button.Parent = box;
+				const sound = new Instance("Sound");
+				sound.SoundId = request.Content;
+				sound.Volume = 1;
+				sound.Looped = true;
+				sound.Parent = box;
+				let playing = false;
+				button.MouseButton1Click.Connect(() => {
+					playing = !playing;
+					if (playing) {
+						sound.Play();
+						button.Text = "⏸";
+					} else {
+						sound.Pause();
+						button.Text = "▶";
+					}
+				});
+			}
 		}
-	}
-});
+	});
+}
+subscribe("");
+
 send("", "welcome", owner.UserId, "");
 output("Using rorc v6 compliant with comradio Protocol v2");
 
@@ -201,7 +209,12 @@ players.GetPlayers().forEach((player: Player) => {
 			output("/send [message] - send a text message");
 			output("/image rbxassetid://[id] [comment] - send an image");
 			output("/sound rbxassetid://[id] [comment] - send a sound");
+			output("/switch [name] - switch to another channel");
 			output("---------------------------------------------------");
+		} else if (command.sub(1, 8) === "/switch ") {
+			channel = command.sub(9, -1);
+			subscribe(channel);
+			send("", "welcome", owner.UserId, "");
 		}
 	});
 });

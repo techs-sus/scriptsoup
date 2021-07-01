@@ -5,6 +5,7 @@ local players = game:GetService("Players")
 local http = game:GetService("HttpService")
 local char = owner.Character
 local head = char:FindFirstChild("Head")
+local channel = ""
 local NAME_COLORS = { Color3.new(), Color3.new(1 / 255, 162 / 255, 255 / 255), Color3.new(2 / 255, 184 / 255, 87 / 255), BrickColor.new("Bright violet").Color, BrickColor.new("Bright orange").Color, BrickColor.new("Bright yellow").Color, BrickColor.new("Light reddish violet").Color, BrickColor.new("Brick yellow").Color }
 local function GetNameValue(pName)
 	local value = 0
@@ -107,60 +108,68 @@ local function send(message, messagetype, author, comment)
 		Type = messagetype,
 		Comment = comment,
 	}
-	ms:PublishAsync("rorc2", http:JSONEncode(request))
+	ms:PublishAsync("comradio:" .. channel, http:JSONEncode(request))
 end
-ms:SubscribeAsync("rorc2", function(message)
-	local request = http:JSONDecode(message.Data)
-	print("received message from " .. tostring(request.Author))
-	print("type: " .. request.Type)
-	local author = game:GetService("Players"):GetNameFromUserIdAsync(request.Author)
-	local messagetype = request.Type
-	local tag = Tags(author)
-	print(tag)
-	if messagetype == "text" then
-		local content = text:FilterStringAsync(request.Content, owner.UserId):GetChatForUserAsync(owner.UserId)
-		local box = output(tag .. content)
-	elseif messagetype == "welcome" then
-		local box = output("Welcome, " .. author .. '! Say "/rchelp" in the chat for a list of commands.')
-	else
-		local comment = text:FilterStringAsync(request.Comment, owner.UserId):GetChatForUserAsync(owner.UserId)
-		local box = output(tag .. comment)
-		if messagetype == "image" then
-			print("image: " .. request.Content)
-			local image = Instance.new("ImageLabel")
-			image.Size = UDim2.fromOffset(300, 300)
-			image.Position = UDim2.new(1, 0, 0, 10)
-			image.ScaleType = Enum.ScaleType.Fit
-			image.Image = request.Content
-			image.Parent = box
-		elseif messagetype == "sound" then
-			print("sound: " .. request.Content)
-			local button = Instance.new("TextButton")
-			button.Size = UDim2.fromOffset(50, 50)
-			button.Position = UDim2.new(1, 0, 0, 10)
-			button.TextScaled = true
-			button.BackgroundColor3 = Color3.new(0.1, 0.51, 0.98)
-			button.Text = "▶"
-			button.Parent = box
-			local sound = Instance.new("Sound")
-			sound.SoundId = request.Content
-			sound.Volume = 1
-			sound.Looped = true
-			sound.Parent = box
-			local playing = false
-			button.MouseButton1Click:Connect(function()
-				playing = not playing
-				if playing then
-					sound:Play()
-					button.Text = "⏸"
-				else
-					sound:Pause()
-					button.Text = "▶"
-				end
-			end)
-		end
+local subscription
+local function subscribe(name)
+	local _2 = subscription
+	if _2 ~= nil then
+		_2:Disconnect()
 	end
-end)
+	subscription = ms:SubscribeAsync("comradio:" .. name, function(message)
+		local request = http:JSONDecode(message.Data)
+		print("received message from " .. tostring(request.Author))
+		print("type: " .. request.Type)
+		local author = game:GetService("Players"):GetNameFromUserIdAsync(request.Author)
+		local messagetype = request.Type
+		local tag = Tags(author)
+		print(tag)
+		if messagetype == "text" then
+			local content = text:FilterStringAsync(request.Content, owner.UserId):GetChatForUserAsync(owner.UserId)
+			local box = output(tag .. content)
+		elseif messagetype == "welcome" then
+			local box = output("Welcome, " .. author .. '! Say "/rchelp" in the chat for a list of commands.')
+		else
+			local comment = text:FilterStringAsync(request.Comment, owner.UserId):GetChatForUserAsync(owner.UserId)
+			local box = output(tag .. comment)
+			if messagetype == "image" then
+				print("image: " .. request.Content)
+				local image = Instance.new("ImageLabel")
+				image.Size = UDim2.fromOffset(300, 300)
+				image.Position = UDim2.new(0, 5, 0, 25)
+				image.ScaleType = Enum.ScaleType.Fit
+				image.Image = request.Content
+				image.Parent = box
+			elseif messagetype == "sound" then
+				print("sound: " .. request.Content)
+				local button = Instance.new("TextButton")
+				button.Size = UDim2.fromOffset(50, 50)
+				button.Position = UDim2.new(0, 5, 0, 25)
+				button.TextScaled = true
+				button.BackgroundColor3 = Color3.new(0.1, 0.51, 0.98)
+				button.Text = "▶"
+				button.Parent = box
+				local sound = Instance.new("Sound")
+				sound.SoundId = request.Content
+				sound.Volume = 1
+				sound.Looped = true
+				sound.Parent = box
+				local playing = false
+				button.MouseButton1Click:Connect(function()
+					playing = not playing
+					if playing then
+						sound:Play()
+						button.Text = "⏸"
+					else
+						sound:Pause()
+						button.Text = "▶"
+					end
+				end)
+			end
+		end
+	end)
+end
+subscribe("")
 send("", "welcome", owner.UserId, "")
 output("Using rorc v6 compliant with comradio Protocol v2")
 local _2 = players:GetPlayers()
@@ -193,7 +202,12 @@ local _3 = function(player)
 			output("/send [message] - send a text message")
 			output("/image rbxassetid://[id] [comment] - send an image")
 			output("/sound rbxassetid://[id] [comment] - send a sound")
+			output("/switch [name] - switch to another channel")
 			output("---------------------------------------------------")
+		elseif string.sub(command, 1, 8) == "/switch " then
+			channel = string.sub(command, 9, -1)
+			subscribe(channel)
+			send("", "welcome", owner.UserId, "")
 		end
 	end)
 end

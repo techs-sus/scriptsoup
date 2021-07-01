@@ -1,23 +1,35 @@
 # COMRADIO PROTOCOL v2
 
-comradio is an IRC-like platform with some extra 
-benefits where you can talk with anyone in any 
-server, as long as you are in the same game.
+All topic names should follow the following format:
+comradio:[channel name]
+Example: comradio:cats, comradio:
 
-All messages must be sent as a *JSON-encoded dictionary* containing these values:
-Type: type of message (see section below)
-Author: user ID of sender (see section below)
-Contents: either the text message or the asset ID
-Comment: text message for the asset (only displayed if type is not "text")
+Every message must be a JSON-encoded dictionary containing the following items:
+* Type: type of message (see section below)
+* Contents: text if type is "text" or asset ID
+* Comment: text message (only displayed if type isn't "text")
+* Author: user ID of sender
 
-## Available types
-* text (text message)
+The official comradio client supports the following message types, but you can add your own!
+* text
 * image
 * sound
 * welcome (used internally)
 
-## Authority
-Since comradio is based on MessagingService, it is decentralized
-and has no authority. Instead, the receiver is considered as the
-central authority when a message is sent. It filters the message
-and displays the message correctly.
+Example:
+```json
+{
+	"Type": "sound",
+	"Contents": "rbxassetid://1337",
+	"Comment": "B)",
+	"Author": 2
+}
+```
+```json
+{
+	"Type": "text",
+	"Contents": "Hi everyone! How are you all doing?",
+	"Comment": "",
+	"Author": 3
+}
+```
