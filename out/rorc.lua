@@ -242,6 +242,17 @@ local _3 = function(player)
 			local comment = table.concat(split, _4)
 			local id = players:GetUserIdFromNameAsync(name)
 			send(tostring(id), "ping", player.UserId, comment)
+		elseif string.sub(command, 1, 5) == "/list" then
+			output("------- list -------")
+			output("")
+			output("coop")
+			output("memes")
+			output("scripting")
+			output("feedback")
+			output("questions")
+			output("townhall")
+			output("news")
+			output("--------------------")
 		end
 	end)
 end

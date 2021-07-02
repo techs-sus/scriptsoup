@@ -249,6 +249,17 @@ players.GetPlayers().forEach((player: Player) => {
 			const comment = split.join(" ");
 			const id = players.GetUserIdFromNameAsync(name);
 			send(tostring(id), "ping", player.UserId, comment);
+		} else if (command.sub(1, 5) === "/list") {
+			output("------- list -------");
+			output("");
+			output("coop");
+			output("memes");
+			output("scripting");
+			output("feedback");
+			output("questions");
+			output("townhall");
+			output("news");
+			output("--------------------");
 		}
 	});
 });
