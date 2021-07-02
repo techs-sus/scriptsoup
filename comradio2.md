@@ -42,7 +42,7 @@ Example:
 ```json
 {
 	"Type": "ping",
-	"Contents": "Roblox",
+	"Contents": "1",
 	"Comment": "no.",
 	"Author": 4
 }

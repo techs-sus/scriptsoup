@@ -218,6 +218,7 @@ local _3 = function(player)
 			output("/sound rbxassetid://[id] [comment] - send a sound")
 			output("/status [status] - change your status")
 			output("/ping [name] [comment] - ping someone")
+			output("/list - see known channels")
 			output("/switch [name] - switch to another channel")
 			output("---------------------------------------------------")
 		elseif string.sub(command, 1, 8) == "/switch " then

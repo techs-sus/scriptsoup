@@ -231,6 +231,7 @@ players.GetPlayers().forEach((player: Player) => {
 			output("/sound rbxassetid://[id] [comment] - send a sound");
 			output("/status [status] - change your status");
 			output("/ping [name] [comment] - ping someone");
+			output("/list - see known channels");
 			output("/switch [name] - switch to another channel");
 			output("---------------------------------------------------");
 		} else if (command.sub(1, 8) === "/switch ") {
