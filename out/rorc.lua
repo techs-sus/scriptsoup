@@ -168,6 +168,13 @@ local function subscribe(name)
 						button.Text = "▶"
 					end
 				end)
+			elseif messagetype == "ping" then
+				local target = players:GetPlayerByUserId(tonumber(request.Content))
+				if target then
+					box.BackgroundTransparency = 0.8
+					box.BackgroundColor3 = Color3.new(1, 0.8, 0.13)
+					box.Text ..= " @" .. target.Name
+				end
 			end
 		end
 	end)
@@ -182,39 +189,58 @@ local _3 = function(player)
 			send(string.sub(command, 7, -1), "text", player.UserId, "")
 		elseif string.sub(command, 1, 7) == "/image " then
 			local split = string.split(string.sub(command, 8, -1), " ")
-			-- eslint-disable-next-line roblox-ts/lua-truthiness
-			local _4 = split[1]
-			local _5 = player.UserId
-			local _6 = split[2]
-			if not (_6 ~= "" and _6) then
-				_6 = ""
+			local id = split[1]
+			table.remove(split, 1)
+			-- ▼ ReadonlyArray.join ▼
+			local _4 = " "
+			if _4 == nil then
+				_4 = ", "
 			end
-			send(_4, "image", _5, _6)
+			-- ▲ ReadonlyArray.join ▲
+			local comment = table.concat(split, _4)
+			send(id, "image", player.UserId, comment)
 		elseif string.sub(command, 1, 7) == "/sound " then
 			local split = string.split(string.sub(command, 8, -1), " ")
-			-- eslint-disable-next-line roblox-ts/lua-truthiness
-			local _4 = split[1]
-			local _5 = player.UserId
-			local _6 = split[2]
-			if not (_6 ~= "" and _6) then
-				_6 = ""
+			local id = split[1]
+			table.remove(split, 1)
+			-- ▼ ReadonlyArray.join ▼
+			local _4 = " "
+			if _4 == nil then
+				_4 = ", "
 			end
-			send(_4, "sound", _5, _6)
+			-- ▲ ReadonlyArray.join ▲
+			local comment = table.concat(split, _4)
+			send(id, "sound", player.UserId, comment)
 		elseif string.sub(command, 1, 7) == "/rchelp" then
 			output("--------------------- help ------------------------")
 			output("/send [message] - send a text message")
 			output("/image rbxassetid://[id] [comment] - send an image")
 			output("/sound rbxassetid://[id] [comment] - send a sound")
-			output("/switch [name] - switch to another channel")
 			output("/status [status] - change your status")
+			output("/ping [name] [comment] - ping someone")
+			output("/switch [name] - switch to another channel")
 			output("---------------------------------------------------")
 		elseif string.sub(command, 1, 8) == "/switch " then
 			channel = string.sub(command, 9, -1)
+			output("switching to " .. channel)
 			subscribe(channel)
 			send("", "welcome", owner.UserId, "")
 		elseif string.sub(command, 1, 8) == "/status " then
 			local status = string.sub(command, 9, -1)
-			send("", "status", owner.UserId, status)
+			send("", "status", player.UserId, status)
+		elseif string.sub(command, 1, 6) == "/ping " then
+			local split = string.split(string.sub(command, 7, -1), " ")
+			local name = split[1]
+			table.remove(split, 1)
+			-- ▼ ReadonlyArray.join ▼
+			local _4 = " "
+			if _4 == nil then
+				_4 = ", "
+			end
+			-- ▲ ReadonlyArray.join ▲
+			local comment = table.concat(split, _4)
+			local id = players:GetUserIdFromNameAsync(name)
+			send(tostring(id), "ping", player.UserId, comment)
 		end
 	end)
 end

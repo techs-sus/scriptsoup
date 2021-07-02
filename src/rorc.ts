@@ -1,4 +1,5 @@
 declare const owner: Player;
+declare const table: unknown;
 
 const ms: MessagingService = game.GetService("MessagingService");
 const text: TextService = game.GetService("TextService");
@@ -16,7 +17,7 @@ interface subscribeCallback {
 }
 
 interface comradioProtocol {
-	Type: "text" | "image" | "welcome" | "sound" | "status";
+	Type: "text" | "image" | "welcome" | "sound" | "status" | "ping";
 	Content: string;
 	Comment: string;
 	Author: number;
@@ -120,7 +121,7 @@ function output(text: string) {
 }
 function send(
 	message: string,
-	messagetype: "text" | "image" | "welcome" | "sound" | "status",
+	messagetype: "text" | "image" | "welcome" | "sound" | "status" | "ping",
 	author: number,
 	comment: string,
 ) {
@@ -191,6 +192,13 @@ function subscribe(name: string) {
 						button.Text = "▶";
 					}
 				});
+			} else if (messagetype === "ping") {
+				const target: Player = players.GetPlayerByUserId(tonumber(request.Content)!) as Player;
+				if (target) {
+					box.BackgroundTransparency = 0.8;
+					box.BackgroundColor3 = new Color3(1, 0.8, 0.13);
+					box.Text += " @" + target.Name;
+				}
 			}
 		}
 	});
@@ -205,28 +213,41 @@ players.GetPlayers().forEach((player: Player) => {
 		if (command.sub(1, 6) === "/send ") {
 			send(command.sub(7, -1), "text", player.UserId, "");
 		} else if (command.sub(1, 7) === "/image ") {
-			const split = command.sub(8, -1).split(" ");
-			// eslint-disable-next-line roblox-ts/lua-truthiness
-			send(split[0], "image", player.UserId, split[1] || "");
+			const split: string[] = command.sub(8, -1).split(" ");
+			const id: string = split[0];
+			split.shift();
+			const comment = split.join(" ");
+			send(id, "image", player.UserId, comment);
 		} else if (command.sub(1, 7) === "/sound ") {
-			const split = command.sub(8, -1).split(" ");
-			// eslint-disable-next-line roblox-ts/lua-truthiness
-			send(split[0], "sound", player.UserId, split[1] || "");
+			const split: string[] = command.sub(8, -1).split(" ");
+			const id: string = split[0];
+			split.shift();
+			const comment = split.join(" ");
+			send(id, "sound", player.UserId, comment);
 		} else if (command.sub(1, 7) === "/rchelp") {
 			output("--------------------- help ------------------------");
 			output("/send [message] - send a text message");
 			output("/image rbxassetid://[id] [comment] - send an image");
 			output("/sound rbxassetid://[id] [comment] - send a sound");
-			output("/switch [name] - switch to another channel");
 			output("/status [status] - change your status");
+			output("/ping [name] [comment] - ping someone");
+			output("/switch [name] - switch to another channel");
 			output("---------------------------------------------------");
 		} else if (command.sub(1, 8) === "/switch ") {
 			channel = command.sub(9, -1);
+			output("switching to " + channel);
 			subscribe(channel);
 			send("", "welcome", owner.UserId, "");
 		} else if (command.sub(1, 8) === "/status ") {
 			const status = command.sub(9, -1);
-			send("", "status", owner.UserId, status);
+			send("", "status", player.UserId, status);
+		} else if (command.sub(1, 6) === "/ping ") {
+			const split: string[] = command.sub(7, -1).split(" ");
+			const name: string = split[0];
+			split.shift();
+			const comment = split.join(" ");
+			const id = players.GetUserIdFromNameAsync(name);
+			send(tostring(id), "ping", player.UserId, comment);
 		}
 	});
 });

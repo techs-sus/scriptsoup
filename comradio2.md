@@ -1,22 +1,27 @@
 # COMRADIO PROTOCOL v2
 
+## Topic names
+The default topic name is "comradio:".
 All topic names should follow the following format:
 comradio:[channel name]
 Example: comradio:cats, comradio:
 
+## Messages
 Every message must be a JSON-encoded dictionary containing the following items:
 * Type: type of message (see section below)
-* Contents: text if type is "text" or asset ID
+* Content: depends on type
 * Comment: text message (only displayed if type isn't "text")
 * Author: user ID of sender
 
 The official comradio client supports the following message types, but you can add your own!
-* text
-* image
-* sound
-* status
+* text (contents)
+* image (content + comment)
+* sound (content + comment)
+* status (comment)
+* ping (content + comment)
 * welcome (used internally)
 
+## Examples
 Example:
 ```json
 {
@@ -32,5 +37,13 @@ Example:
 	"Contents": "Hi everyone! How are you all doing?",
 	"Comment": "",
 	"Author": 3
+}
+```
+```json
+{
+	"Type": "ping",
+	"Contents": "Roblox",
+	"Comment": "no.",
+	"Author": 4
 }
 ```
