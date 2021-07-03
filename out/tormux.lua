@@ -62,7 +62,19 @@ local availableWidgets = {
 		local widget = widgetTemplate:Clone()
 		coroutine.wrap(function()
 			while true do
-				widget.Text = http:GetAsync("http://api.quotable.io/random")
+				local quote = http:JSONDecode(http:GetAsync("http://api.quotable.io/random"))
+				widget.Text = quote.content
+				wait(35)
+			end
+		end)()
+		return widget
+	end,
+	joke = function()
+		local widget = widgetTemplate:Clone()
+		coroutine.wrap(function()
+			while true do
+				local joke = http:GetAsync("https://v2.jokeapi.dev/joke/Any?format=txt&safe-mode")
+				widget.Text = joke
 				wait(35)
 			end
 		end)()
@@ -74,6 +86,25 @@ local function log(text)
 	box.Name = tostring(os.clock())
 	box.Text = text
 	box.Parent = out
+	if #out:GetChildren() > 11 then
+		local oldest
+		local _2 = out:GetChildren()
+		local _3 = function(box)
+			if box:IsA("TextBox") then
+				if oldest ~= nil then
+					oldest = box
+				elseif tonumber(oldest.Name) < tonumber(box.Name) then
+					oldest = box
+				end
+			end
+		end
+		-- ▼ ReadonlyArray.forEach ▼
+		for _4, _5 in ipairs(_2) do
+			_3(_5, _4 - 1, _2)
+		end
+		-- ▲ ReadonlyArray.forEach ▲
+		oldest:Destroy()
+	end
 end
 local env = getfenv(0)
 local terminalLib = {

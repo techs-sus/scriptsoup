@@ -72,7 +72,21 @@ const availableWidgets = {
 		const widget = widgetTemplate.Clone() as TextBox;
 		coroutine.wrap(() => {
 			while (true) {
-				widget.Text = http.GetAsync("http://api.quotable.io/random");
+				const quote: { [type: string]: unknown } = http.JSONDecode(
+					http.GetAsync("http://api.quotable.io/random"),
+				);
+				widget.Text = quote.content as string;
+				wait(35);
+			}
+		})();
+		return widget;
+	},
+	joke: () => {
+		const widget = widgetTemplate.Clone() as TextBox;
+		coroutine.wrap(() => {
+			while (true) {
+				const joke = http.GetAsync("https://v2.jokeapi.dev/joke/Any?format=txt&safe-mode");
+				widget.Text = joke;
 				wait(35);
 			}
 		})();
@@ -84,6 +98,19 @@ function log(text: string) {
 	box.Name = tostring(os.clock());
 	box.Text = text;
 	box.Parent = out;
+	if (out.GetChildren().size() > 11) {
+		let oldest: Instance;
+		out.GetChildren().forEach((box: Instance) => {
+			if (box.IsA("TextBox")) {
+				if (oldest !== undefined) {
+					oldest = box;
+				} else if (tonumber((oldest as Instance).Name)! < tonumber(box.Name)!) {
+					oldest = box;
+				}
+			}
+		});
+		oldest!.Destroy();
+	}
 }
 const env = getfenv(0) as { [type: string]: unknown };
 const terminalLib = {
