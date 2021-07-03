@@ -33,6 +33,10 @@
         "version": "ccf3c3d725716d5509b7e54e06a53b3631d59d7e3a5db170fd78cb8036e2a6fb",
         "affectsGlobalScope": false
       },
+      "../src/tormux.ts": {
+        "version": "52e38356a66996266f22851d9bc1b3710de113202778e1881b586d8531aaf105",
+        "affectsGlobalScope": false
+      },
       "../src/toy.ts": {
         "version": "6ea785d8d58d0cf6d8ec47963258d43634a3eae254b6e6fda41018c1ce8166ae",
         "affectsGlobalScope": false
