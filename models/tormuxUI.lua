@@ -126,7 +126,7 @@ UIListLayout.Padding = UDim.new(0, 4)
 UIListLayout.Parent = output
 
 local TextBox2 = Instance.new("TextBox")
-TextBox2.Name = "0"
+TextBox2.Name = "welcome"
 TextBox2.AutomaticSize = Enum.AutomaticSize.XY
 TextBox2.BackgroundTransparency = 1
 TextBox2.BorderSizePixel = 0
@@ -148,7 +148,7 @@ UIPadding4.PaddingRight = UDim.new(0, 10)
 UIPadding4.Parent = output
 
 local TextBox3 = Instance.new("TextBox")
-TextBox3.Name = "1"
+TextBox3.Name = "help"
 TextBox3.AutomaticSize = Enum.AutomaticSize.XY
 TextBox3.BackgroundTransparency = 1
 TextBox3.BorderSizePixel = 0
