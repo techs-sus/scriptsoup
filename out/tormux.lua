@@ -91,7 +91,7 @@ local function log(text)
 		local _2 = out:GetChildren()
 		local _3 = function(box)
 			if box:IsA("TextBox") then
-				if oldest ~= nil then
+				if oldest == nil then
 					oldest = box
 				elseif tonumber(oldest.Name) < tonumber(box.Name) then
 					oldest = box

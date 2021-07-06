@@ -34,7 +34,7 @@
         "affectsGlobalScope": false
       },
       "../src/tormux.ts": {
-        "version": "88cfd8243bcff6c154ed8f110725ed57fd1f38cf01764ac9f46100ac5f1e7842",
+        "version": "29fdda3c94a97445befd9458af5c1667dc4f875d53b50ee158a363a473216bdb",
         "affectsGlobalScope": false
       },
       "../src/toy.ts": {

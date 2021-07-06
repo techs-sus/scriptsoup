@@ -102,7 +102,7 @@ function log(text: string) {
 		let oldest: Instance;
 		out.GetChildren().forEach((box: Instance) => {
 			if (box.IsA("TextBox")) {
-				if (oldest !== undefined) {
+				if (oldest === undefined) {
 					oldest = box;
 				} else if (tonumber((oldest as Instance).Name)! < tonumber(box.Name)!) {
 					oldest = box;
