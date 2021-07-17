@@ -17,6 +17,10 @@
         "version": "f7358e8ea858def7274c040cfbedac31a45e4b25a1b6eb891b0e18cc43a2e26b",
         "affectsGlobalScope": false
       },
+      "../src/raycast.ts": {
+        "version": "0581aff5fe7e3f57f3183ebce87690c35aae15b717475328d293a9d366c4e175",
+        "affectsGlobalScope": false
+      },
       "../src/rorc.ts": {
         "version": "4b61c707098d32e7f05e049c0006d068330955897758437b63df64b846fa9796",
         "affectsGlobalScope": false
