@@ -1,3 +1,10 @@
+const pointlights: PointLight[] = [];
+game.Workspace.GetDescendants().forEach((light: Instance) => {
+	if (light.IsA("PointLight")) {
+		pointlights.push(light as PointLight);
+	}
+});
+
 function raycast(origin: Vector3, normal: Vector3): Color3 {
 	const result = game.Workspace.Raycast(origin, normal);
 	if (result) {
@@ -13,9 +20,16 @@ function raycast(origin: Vector3, normal: Vector3): Color3 {
 					result.Instance.Transparency,
 				);
 			}
+			/* was very ugly
 			if (game.Workspace.Raycast(result.Position, new Vector3(0.5, 0.1, 0).mul(100))) {
 				color = color.Lerp(new Color3(0, 0, 0), 1 - result.Instance.Transparency);
 			}
+			*/
+			pointlights.forEach((light: PointLight) => {
+				if (inSphere((light.Parent as BasePart).Position, light.Range, result.Position)) {
+					color = color.Lerp(light.Color, light.Brightness / 120);
+				}
+			});
 			return color;
 		} else {
 			return game.Workspace.Terrain.GetMaterialColor(result.Material);
@@ -29,13 +43,23 @@ function eqColor(a: Color3, b: Color3): boolean {
 	const diffb = math.abs(a.B - b.B);
 	return diffr < 0.1 && diffg < 0.1 && diffb < 0.1;
 }
+function inSphere(center: Vector3, radius: number, point: Vector3) {
+	return (
+		point.X < center.X + radius &&
+		point.X > center.X - radius &&
+		point.Y < center.Y + radius &&
+		point.Y > center.Y - radius &&
+		point.Z < center.Z + radius &&
+		point.Z > center.Z - radius
+	);
+}
 
 const pixels: BasePart[][] = [];
 for (let x = -50; x < 50; x++) {
 	pixels[x] = [];
 	for (let y = -50; y < 50; y++) {
 		if (y % 16 === 0) {
-			wait(1 / 10);
+			wait(1 / 40);
 		}
 
 		const pixel = new Instance("WedgePart");
