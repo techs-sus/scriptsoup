@@ -37,6 +37,48 @@ const commands: { [type: string]: command } = {
 		head.Value = scale;
 		return undefined;
 	},
+	ws: (args: string[]) => {
+		const char: Model = owner.Character as Model;
+		if (!char) {
+			warn("no character");
+			return;
+		}
+		const hum: Humanoid = char.FindFirstChild("Humanoid") as Humanoid;
+		if (!hum) {
+			warn("no humanoid");
+			return;
+		}
+		hum.WalkSpeed = tonumber(args[1])!;
+		return undefined;
+	},
+	jp: (args: string[]) => {
+		const char: Model = owner.Character as Model;
+		if (!char) {
+			warn("no character");
+			return;
+		}
+		const hum: Humanoid = char.FindFirstChild("Humanoid") as Humanoid;
+		if (!hum) {
+			warn("no humanoid");
+			return;
+		}
+		hum.JumpPower = tonumber(args[1])!;
+		return undefined;
+	},
+	dn: (args: string[]) => {
+		const char: Model = owner.Character as Model;
+		if (!char) {
+			warn("no character");
+			return;
+		}
+		const hum: Humanoid = char.FindFirstChild("Humanoid") as Humanoid;
+		if (!hum) {
+			warn("no humanoid");
+			return;
+		}
+		hum.DisplayName = args[1];
+		return undefined;
+	},
 };
 function get(endpoint: string): string {
 	const url = API + endpoint;

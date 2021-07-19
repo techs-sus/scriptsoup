@@ -18,7 +18,7 @@
         "affectsGlobalScope": false
       },
       "../src/raycast.ts": {
-        "version": "51c93deab75b0e248d48b8829da0122530821e1fc5d0d2c155c22608d6d4d911",
+        "version": "a0f75c6c093354c11d252355838cc237eaf36cd909c0f23edb61ac5ce451bd32",
         "affectsGlobalScope": false
       },
       "../src/rorc.ts": {
@@ -26,7 +26,7 @@
         "affectsGlobalScope": false
       },
       "../src/runner.ts": {
-        "version": "88885cbd30e430927984abd3cea03de56b3e542304680f8561bf85708d485f75",
+        "version": "b31c0cf107daf5239f1431428662e0e7d4368a37ec4372f3621513f2bca91e7e",
         "affectsGlobalScope": false
       },
       "../src/soundlog.ts": {

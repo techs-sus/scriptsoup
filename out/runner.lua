@@ -32,6 +32,48 @@ local commands = {
 		head.Value = scale
 		return nil
 	end,
+	ws = function(args)
+		local char = owner.Character
+		if not char then
+			warn("no character")
+			return nil
+		end
+		local hum = char:FindFirstChild("Humanoid")
+		if not hum then
+			warn("no humanoid")
+			return nil
+		end
+		hum.WalkSpeed = tonumber(args[2])
+		return nil
+	end,
+	jp = function(args)
+		local char = owner.Character
+		if not char then
+			warn("no character")
+			return nil
+		end
+		local hum = char:FindFirstChild("Humanoid")
+		if not hum then
+			warn("no humanoid")
+			return nil
+		end
+		hum.JumpPower = tonumber(args[2])
+		return nil
+	end,
+	dn = function(args)
+		local char = owner.Character
+		if not char then
+			warn("no character")
+			return nil
+		end
+		local hum = char:FindFirstChild("Humanoid")
+		if not hum then
+			warn("no humanoid")
+			return nil
+		end
+		hum.DisplayName = args[2]
+		return nil
+	end,
 }
 local function get(endpoint)
 	local url = API .. endpoint
