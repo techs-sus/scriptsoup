@@ -7,6 +7,77 @@ local char = owner.Character
 local head = char:FindFirstChild("Head")
 local channel = ""
 local NAME_COLORS = { Color3.new(), Color3.new(1 / 255, 162 / 255, 255 / 255), Color3.new(2 / 255, 184 / 255, 87 / 255), BrickColor.new("Bright violet").Color, BrickColor.new("Bright orange").Color, BrickColor.new("Bright yellow").Color, BrickColor.new("Light reddish violet").Color, BrickColor.new("Brick yellow").Color }
+local function DEC_HEX(IN)
+	local B = 16
+	local K = "0123456789ABCDEF"
+	local OUT = ""
+	local I = 0
+	local D = 0
+	while IN > 0 do
+		I += 1
+		IN = math.floor(IN / B)
+		D = (IN % B) + 1
+		OUT = string.sub(K, D, D) .. OUT
+	end
+	return OUT
+end
+local function encode(input)
+	local encoded = {}
+	do
+		local _0 = 1
+		while _0 <= #input do
+			local i = _0
+			local _1 = input
+			local _2 = i
+			local _3 = i
+			local c = string.sub(_1, _2, _3)
+			local _4 = encoded
+			local _5 = (string.byte(c))
+			-- ▼ Array.push ▼
+			_4[#_4 + 1] = _5
+			-- ▲ Array.push ▲
+			_0 = i
+			_0 += 1
+		end
+	end
+	return encoded
+end
+local function xorEncrypt(input, password)
+	local _0 = input
+	local _1 = function(byte, index)
+		local dec = bit32.bxor(byte, password[index + 1])
+		return DEC_HEX(dec)
+	end
+	-- ▼ ReadonlyArray.map ▼
+	local _2 = table.create(#_0)
+	for _3, _4 in ipairs(_0) do
+		_2[_3] = _1(_4, _3 - 1, _0)
+	end
+	-- ▲ ReadonlyArray.map ▲
+	local encryptedArray = _2
+	-- ▼ ReadonlyArray.join ▼
+	local _3 = " "
+	if _3 == nil then
+		_3 = ", "
+	end
+	-- ▲ ReadonlyArray.join ▲
+	return table.concat(encryptedArray, _3)
+end
+local function xorDecrypt(input, password)
+	local decrypted = ""
+	local _0 = string.split(input, " ")
+	local _1 = function(byte, index)
+		local dec = tonumber(byte, 16)
+		local unlocked = bit32.bxor(dec, password[index + 1])
+		decrypted ..= string.char(unlocked)
+	end
+	-- ▼ ReadonlyArray.forEach ▼
+	for _2, _3 in ipairs(_0) do
+		_1(_3, _2 - 1, _0)
+	end
+	-- ▲ ReadonlyArray.forEach ▲
+	return decrypted
+end
 local function GetNameValue(pName)
 	local value = 0
 	do
@@ -110,6 +181,9 @@ local function send(message, messagetype, author, comment)
 	}
 	ms:PublishAsync("comradio:" .. channel, http:JSONEncode(request))
 end
+local keys = {}
+local exchanges = {}
+local privateKey = math.random()
 local subscription
 local function subscribe(name)
 	local _2 = subscription
@@ -175,6 +249,61 @@ local function subscribe(name)
 					box.BackgroundColor3 = Color3.new(1, 0.8, 0.13)
 					box.Text ..= " @" .. target.Name
 				end
+			elseif messagetype == "diffieHellmanExchange" then
+				local target = tonumber(string.split(comment, ";")[2])
+				if target == owner.UserId then
+					local _3 = string.split(comment, ";")[1]
+					repeat
+						if _3 == ("1a") then
+							exchanges[request.Author] = {}
+							exchanges[request.Author].p = tonumber(string.split(request.Content, ";")[1])
+							exchanges[request.Author].g = tonumber(string.split(request.Content, ";")[2])
+							box:Destroy()
+							local B = (bit32.bxor(exchanges[request.Author].g, privateKey)) % exchanges[request.Author].p
+							send(request.Content .. ";" .. tostring(B), "diffieHellmanExchange", owner.UserId, "1b;" .. tostring(request.Author))
+							return nil
+						end
+						if _3 == ("1b") then
+							exchanges[request.Author] = {}
+							exchanges[request.Author].p = tonumber(string.split(request.Content, ";")[1])
+							exchanges[request.Author].g = tonumber(string.split(request.Content, ";")[2])
+							exchanges[request.Author].B = tonumber(string.split(request.Content, ";")[3])
+							box:Destroy()
+							local A = (bit32.bxor(exchanges[request.Author].g, privateKey)) % exchanges[request.Author].p
+							send(tostring(A), "diffieHellmanExchange", owner.UserId, "2a;" .. tostring(request.Author))
+							return nil
+						end
+						if _3 == ("2a") then
+							exchanges[request.Author].A = tonumber(request.Content)
+							exchanges[request.Author].s = (bit32.bxor(exchanges[request.Author].A, privateKey)) % exchanges[request.Author].p
+							send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" .. tostring(request.Author))
+							box:Destroy()
+							return nil
+						end
+						if _3 == ("2b") then
+							exchanges[request.Author].s = (bit32.bxor(exchanges[request.Author].B, privateKey)) % exchanges[request.Author].p
+							send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" .. tostring(request.Author))
+							box:Destroy()
+							return nil
+						end
+						if _3 == ("3") then
+							box.Text ..= "[KEYS CONFIFRMED] You can now send encrypted messages to " .. author
+							keys[request.Author] = exchanges[request.Author].s
+							return nil
+						end
+					until true
+				end
+			elseif messagetype == "private" then
+				local target = tonumber(request.Content)
+				if target == owner.UserId then
+					-- eslint-disable-next-line roblox-ts/lua-truthiness
+					local _3 = keys[request.Author]
+					if _3 ~= 0 and _3 == _3 and _3 then
+						box.Text ..= "[ENCRYPTED] " .. xorDecrypt(comment, encode(tostring(keys[request.Author])))
+					else
+						box.Text = "[ERROR]: Received private message from " .. author .. ", but no keys are available to decrypt."
+					end
+				end
 			end
 		end
 	end)
@@ -220,6 +349,8 @@ local _3 = function(player)
 			output("/ping [name] [comment] - ping someone")
 			output("/list - see known channels")
 			output("/switch [name] - switch to another channel")
+			output("/keys [name] - confirm keys with someone")
+			output("/private [name] [msg] - send a private message to someone [requires keys]")
 			output("---------------------------------------------------")
 		elseif string.sub(command, 1, 8) == "/switch " then
 			channel = string.sub(command, 9, -1)
@@ -253,6 +384,32 @@ local _3 = function(player)
 			output("townhall")
 			output("news")
 			output("--------------------")
+		elseif string.sub(command, 1, 6) == "/keys " then
+			local split = string.split(string.sub(command, 7, -1), " ")
+			local name = split[1]
+			table.remove(split, 1)
+			-- ▼ ReadonlyArray.join ▼
+			local _4 = ";"
+			if _4 == nil then
+				_4 = ", "
+			end
+			-- ▲ ReadonlyArray.join ▲
+			local comment = table.concat(split, _4)
+			local id = players:GetUserIdFromNameAsync(name)
+			send(comment, "diffieHellmanExchange", player.UserId, tostring(id))
+		elseif string.sub(command, 1, 9) == "/private " then
+			local split = string.split(string.sub(command, 7, -1), " ")
+			local name = split[1]
+			table.remove(split, 1)
+			-- ▼ ReadonlyArray.join ▼
+			local _4 = " "
+			if _4 == nil then
+				_4 = ", "
+			end
+			-- ▲ ReadonlyArray.join ▲
+			local comment = table.concat(split, _4)
+			local id = players:GetUserIdFromNameAsync(name)
+			send(tostring(id), "encrypted", player.UserId, comment)
 		end
 	end)
 end

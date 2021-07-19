@@ -17,7 +17,7 @@ interface subscribeCallback {
 }
 
 interface comradioProtocol {
-	Type: "text" | "image" | "welcome" | "sound" | "status" | "ping";
+	Type: "text" | "image" | "welcome" | "sound" | "status" | "ping" | "encrypted" | "diffieHellmanExchange";
 	Content: string;
 	Comment: string;
 	Author: number;
@@ -33,6 +33,44 @@ const NAME_COLORS = [
 	new BrickColor("Light reddish violet").Color,
 	new BrickColor("Brick yellow").Color,
 ];
+function DEC_HEX(IN: number) {
+	const B = 16;
+	const K = "0123456789ABCDEF";
+	let OUT = "";
+	let I = 0;
+	let D = 0;
+	while (IN > 0) {
+		I += 1;
+		IN = math.floor(IN / B);
+		D = (IN % B) + 1;
+		OUT = string.sub(K, D, D) + OUT;
+	}
+	return OUT;
+}
+function encode(input: string) {
+	const encoded: number[] = [];
+	for (let i = 1; i <= input.size(); i++) {
+		const c = input.sub(i, i);
+		encoded.push(c.byte()[0]);
+	}
+	return encoded;
+}
+function xorEncrypt(input: number[], password: number[]) {
+	const encryptedArray = input.map((byte, index) => {
+		const dec = bit32.bxor(byte, password[index]);
+		return DEC_HEX(dec);
+	});
+	return encryptedArray.join(" ");
+}
+function xorDecrypt(input: string, password: number[]) {
+	let decrypted = "";
+	input.split(" ").forEach((byte: string, index: number) => {
+		const dec = tonumber(byte, 16)!;
+		const unlocked = bit32.bxor(dec, password[index]);
+		decrypted += string.char(unlocked);
+	});
+	return decrypted;
+}
 function GetNameValue(pName: string) {
 	let value = 0;
 	for (let index = 1; index < pName.size(); index++) {
@@ -121,7 +159,7 @@ function output(text: string) {
 }
 function send(
 	message: string,
-	messagetype: "text" | "image" | "welcome" | "sound" | "status" | "ping",
+	messagetype: "text" | "image" | "welcome" | "sound" | "status" | "ping" | "encrypted" | "diffieHellmanExchange",
 	author: number,
 	comment: string,
 ) {
@@ -134,6 +172,10 @@ function send(
 	};
 	ms.PublishAsync("comradio:" + channel, http.JSONEncode(request));
 }
+
+const keys: { [id: number]: number } = {};
+const exchanges: { [id: number]: { [variable: string]: number } } = {};
+const privateKey = math.random();
 
 let subscription: RBXScriptConnection;
 function subscribe(name: string) {
@@ -199,6 +241,64 @@ function subscribe(name: string) {
 					box.BackgroundColor3 = new Color3(1, 0.8, 0.13);
 					box.Text += " @" + target.Name;
 				}
+			} else if (messagetype === "diffieHellmanExchange") {
+				const target: number = tonumber(comment.split(";")[1])!;
+				if (target === owner.UserId) {
+					switch (comment.split(";")[0]) {
+						case "1a": // bob
+							exchanges[request.Author] = {};
+							exchanges[request.Author].p = tonumber(request.Content.split(";")[0])!;
+							exchanges[request.Author].g = tonumber(request.Content.split(";")[1])!;
+							box.Destroy();
+							const B = (exchanges[request.Author].g ^ privateKey) % exchanges[request.Author].p;
+							send(
+								request.Content + ";" + B,
+								"diffieHellmanExchange",
+								owner.UserId,
+								"1b;" + request.Author,
+							);
+							return;
+						case "1b": // alice
+							exchanges[request.Author] = {};
+							exchanges[request.Author].p = tonumber(request.Content.split(";")[0])!;
+							exchanges[request.Author].g = tonumber(request.Content.split(";")[1])!;
+							exchanges[request.Author].B = tonumber(request.Content.split(";")[2])!;
+							box.Destroy();
+							const A = (exchanges[request.Author].g ^ privateKey) % exchanges[request.Author].p;
+							send(tostring(A), "diffieHellmanExchange", owner.UserId, "2a;" + request.Author);
+							return;
+						case "2a": // bob
+							exchanges[request.Author].A = tonumber(request.Content)!;
+							exchanges[request.Author].s =
+								(exchanges[request.Author].A ^ privateKey) % exchanges[request.Author].p;
+							send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" + request.Author);
+							box.Destroy();
+							return;
+						case "2b": // alice
+							exchanges[request.Author].s =
+								(exchanges[request.Author].B ^ privateKey) % exchanges[request.Author].p;
+							send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" + request.Author);
+							box.Destroy();
+							return;
+						case "3": // bob
+							box.Text += "[KEYS CONFIFRMED] You can now send encrypted messages to " + author;
+							keys[request.Author] = exchanges[request.Author].s;
+							return;
+					}
+				}
+			} else if (messagetype === "private") {
+				const target: number = tonumber(request.Content)!;
+				if (target === owner.UserId) {
+					// eslint-disable-next-line roblox-ts/lua-truthiness
+					if (keys[request.Author]) {
+						box.Text += "[ENCRYPTED] " + xorDecrypt(comment, encode(tostring(keys[request.Author])));
+					} else {
+						box.Text =
+							"[ERROR]: Received private message from " +
+							author +
+							", but no keys are available to decrypt.";
+					}
+				}
 			}
 		}
 	});
@@ -233,6 +333,8 @@ players.GetPlayers().forEach((player: Player) => {
 			output("/ping [name] [comment] - ping someone");
 			output("/list - see known channels");
 			output("/switch [name] - switch to another channel");
+			output("/keys [name] - confirm keys with someone");
+			output("/private [name] [msg] - send a private message to someone [requires keys]");
 			output("---------------------------------------------------");
 		} else if (command.sub(1, 8) === "/switch ") {
 			channel = command.sub(9, -1);
@@ -260,6 +362,20 @@ players.GetPlayers().forEach((player: Player) => {
 			output("townhall");
 			output("news");
 			output("--------------------");
+		} else if (command.sub(1, 6) === "/keys ") {
+			const split: string[] = command.sub(7, -1).split(" ");
+			const name: string = split[0];
+			split.shift();
+			const comment = split.join(";");
+			const id = players.GetUserIdFromNameAsync(name);
+			send(comment, "diffieHellmanExchange", player.UserId, tostring(id));
+		} else if (command.sub(1, 9) === "/private ") {
+			const split: string[] = command.sub(7, -1).split(" ");
+			const name: string = split[0];
+			split.shift();
+			const comment = split.join(" ");
+			const id = players.GetUserIdFromNameAsync(name);
+			send(tostring(id), "encrypted", player.UserId, comment);
 		}
 	});
 });

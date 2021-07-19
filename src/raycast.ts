@@ -87,8 +87,4 @@ for (let x = -100; x < 100; x++) {
 	}
 }
 
-pixels.forEach((xArray, x) => {
-
-})
-
 export {};

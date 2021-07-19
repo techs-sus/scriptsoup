@@ -125,11 +125,4 @@ do
 		_2 += 1
 	end
 end
-local _2 = pixels
-local _3 = function(xArray, x) end
--- ▼ ReadonlyArray.forEach ▼
-for _4, _5 in ipairs(_2) do
-	_3(_5, _4 - 1, _2)
-end
--- ▲ ReadonlyArray.forEach ▲
 return nil
