@@ -33,20 +33,6 @@ const NAME_COLORS = [
 	new BrickColor("Light reddish violet").Color,
 	new BrickColor("Brick yellow").Color,
 ];
-function DEC_HEX(IN: number) {
-	const B = 16;
-	const K = "0123456789ABCDEF";
-	let OUT = "";
-	let I = 0;
-	let D = 0;
-	while (IN > 0) {
-		I += 1;
-		IN = math.floor(IN / B);
-		D = (IN % B) + 1;
-		OUT = string.sub(K, D, D) + OUT;
-	}
-	return OUT;
-}
 function encode(input: string) {
 	const encoded: number[] = [];
 	for (let i = 1; i <= input.size(); i++) {
@@ -56,16 +42,13 @@ function encode(input: string) {
 	return encoded;
 }
 function xorEncrypt(input: number[], password: number[]) {
-	const encryptedArray = input.map((byte, index) => {
-		const dec = bit32.bxor(byte, password[index % password.size()]);
-		return DEC_HEX(dec);
-	});
+	const encryptedArray = input.map((byte, index) => bit32.bxor(byte, password[index % password.size()]));
 	return encryptedArray.join(" ");
 }
 function xorDecrypt(input: string, password: number[]) {
 	let decrypted = "";
-	input.split(" ").forEach((byte: string, index: number) => {
-		const dec = tonumber(byte, 16)!;
+	input.split(";").forEach((byte: string, index: number) => {
+		const dec = tonumber(byte)!;
 		const unlocked = bit32.bxor(dec, password[index % password.size()]);
 		decrypted += string.char(unlocked);
 	});
@@ -198,6 +181,51 @@ function subscribe(name: string) {
 		} else if (messagetype === "status") {
 			const comment = text.FilterStringAsync(request.Comment!, owner.UserId)!.GetChatForUserAsync(owner.UserId);
 			const box = output(`${author}s new status is ${comment}`);
+		} else if (messagetype === "diffieHellmanExchange") {
+			const comment = request.Comment;
+			const box = output(tag);
+			const target: number = tonumber(comment.split(";")[1])!;
+			print(comment, request.Content);
+			if (target === owner.UserId) {
+				switch (comment.split(";")[0]) {
+					case "1a": // bob
+						exchanges[request.Author] = {};
+						exchanges[request.Author].p = tonumber(request.Content.split(";")[0])!;
+						exchanges[request.Author].g = tonumber(request.Content.split(";")[1])!;
+						box.Destroy();
+						const B = (exchanges[request.Author].g ^ privateKey) % exchanges[request.Author].p;
+						send(request.Content + ";" + B, "diffieHellmanExchange", owner.UserId, "1b;" + request.Author);
+						break;
+					case "1b": // alice
+						exchanges[request.Author] = {};
+						exchanges[request.Author].p = tonumber(request.Content.split(";")[0])!;
+						exchanges[request.Author].g = tonumber(request.Content.split(";")[1])!;
+						exchanges[request.Author].B = tonumber(request.Content.split(";")[2])!;
+						box.Destroy();
+						const A = (exchanges[request.Author].g ^ privateKey) % exchanges[request.Author].p;
+						send(tostring(A), "diffieHellmanExchange", owner.UserId, "2a;" + request.Author);
+						break;
+					case "2a": // bob
+						exchanges[request.Author].A = tonumber(request.Content)!;
+						exchanges[request.Author].s =
+							(exchanges[request.Author].A ^ privateKey) % exchanges[request.Author].p;
+						send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" + request.Author);
+						box.Destroy();
+						break;
+					case "2b": // alice
+						exchanges[request.Author].s =
+							(exchanges[request.Author].B ^ privateKey) % exchanges[request.Author].p;
+						send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" + request.Author);
+						box.Destroy();
+						break;
+					case "3": // bob
+						box.Text += "[KEYS CONFIFRMED] You can now send encrypted messages to " + author;
+						keys[request.Author] = exchanges[request.Author].s;
+						break;
+				}
+			} else {
+				box.Destroy();
+			}
 		} else {
 			const comment = text.FilterStringAsync(request.Comment!, owner.UserId)!.GetChatForUserAsync(owner.UserId);
 			const box = output(tag + comment);
@@ -245,58 +273,13 @@ function subscribe(name: string) {
 						box.Text += " @" + pingTarget.Name;
 					}
 					break;
-				case "diffieHellmanExchange":
-					const target: number = tonumber(comment.split(";")[1])!;
-					if (target === owner.UserId) {
-						switch (comment.split(";")[0]) {
-							case "1a": // bob
-								exchanges[request.Author] = {};
-								exchanges[request.Author].p = tonumber(request.Content.split(";")[0])!;
-								exchanges[request.Author].g = tonumber(request.Content.split(";")[1])!;
-								box.Destroy();
-								const B = (exchanges[request.Author].g ^ privateKey) % exchanges[request.Author].p;
-								send(
-									request.Content + ";" + B,
-									"diffieHellmanExchange",
-									owner.UserId,
-									"1b;" + request.Author,
-								);
-								break;
-							case "1b": // alice
-								exchanges[request.Author] = {};
-								exchanges[request.Author].p = tonumber(request.Content.split(";")[0])!;
-								exchanges[request.Author].g = tonumber(request.Content.split(";")[1])!;
-								exchanges[request.Author].B = tonumber(request.Content.split(";")[2])!;
-								box.Destroy();
-								const A = (exchanges[request.Author].g ^ privateKey) % exchanges[request.Author].p;
-								send(tostring(A), "diffieHellmanExchange", owner.UserId, "2a;" + request.Author);
-								break;
-							case "2a": // bob
-								exchanges[request.Author].A = tonumber(request.Content)!;
-								exchanges[request.Author].s =
-									(exchanges[request.Author].A ^ privateKey) % exchanges[request.Author].p;
-								send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" + request.Author);
-								box.Destroy();
-								break;
-							case "2b": // alice
-								exchanges[request.Author].s =
-									(exchanges[request.Author].B ^ privateKey) % exchanges[request.Author].p;
-								send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" + request.Author);
-								box.Destroy();
-								break;
-							case "3": // bob
-								box.Text += "[KEYS CONFIFRMED] You can now send encrypted messages to " + author;
-								keys[request.Author] = exchanges[request.Author].s;
-								break;
-						}
-					}
-					break;
-				case "private":
+				case "encrypted":
 					const messageTarget: number = tonumber(request.Content)!;
 					if (messageTarget === owner.UserId) {
 						// eslint-disable-next-line roblox-ts/lua-truthiness
 						if (keys[request.Author]) {
-							box.Text += "[ENCRYPTED] " + xorDecrypt(comment, encode(tostring(keys[request.Author])));
+							box.Text =
+								tag + "[ENCRYPTED] " + xorDecrypt(comment, encode(tostring(keys[request.Author])));
 						} else {
 							box.Text =
 								"[ERROR]: Received private message from " +
@@ -376,14 +359,20 @@ players.GetPlayers().forEach((player: Player) => {
 			split.shift();
 			const comment = split.join(";");
 			const id = players.GetUserIdFromNameAsync(name);
-			send(comment, "diffieHellmanExchange", player.UserId, tostring(id));
+			send(comment, "diffieHellmanExchange", player.UserId, "1a;" + tostring(id));
 		} else if (command.sub(1, 9) === "/private ") {
-			const split: string[] = command.sub(7, -1).split(" ");
+			const split: string[] = command.sub(10, -1).split(" ");
 			const name: string = split[0];
 			split.shift();
 			const comment = split.join(" ");
 			const id = players.GetUserIdFromNameAsync(name);
-			send(tostring(id), "encrypted", player.UserId, comment);
+			// eslint-disable-next-line roblox-ts/lua-truthiness
+			if (keys[id]) {
+				const encrypted = xorEncrypt(encode(comment), encode(tostring(keys[id])));
+				send(tostring(id), "encrypted", player.UserId, encrypted);
+			} else {
+				output("[ERROR]: Attempt to send private message to someone without encryption key");
+			}
 		}
 	});
 });

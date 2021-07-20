@@ -79,12 +79,13 @@ A key exchange might look like this:
 	"Author": 2
 }
 ```
-2. Bob confirms that they received the message
+2. Bob confirms that they received the message, chooses a secret integer `b = 3`, and sends
+Alice the modulus, base and `B = g^b % p`
 ```json
 {
 	"Type": "diffieHellmanExchange",
 	"Contents": "23;5",
-	"Comment": "1b;2",
+	"Comment": "1b;2;10",
 	"Author": 3
 }
 ```
@@ -97,11 +98,11 @@ A key exchange might look like this:
 	"Author": 2
 }
 ```
-4. Bob (id 3) chooses a secret integer b = 3, then sends Alice `B = g^b % p`
+4. Bob (id 3) confirms they received the message.
 ```json
 {
 	"Type": "diffieHellmanExchange",
-	"Contents": "10",
+	"Contents": "confirmed",
 	"Comment": "2b;2",
 	"Author": 3
 }
@@ -138,13 +139,13 @@ sending encrypted messages.
 The shared key should be stored for later usage (see section below).
 
 ### Encrypted messages
-The contents should be the target listener ID. The comment must be space-seperated
-hex codes that will be decrypted with the XOR cipher using the saved shared key.
+The contents should be the target listener ID. The comment must be semicolon-seperated
+decimal numbers that will be decrypted with the XOR cipher using the saved shared key.
 ```json
 {
 	"Type": "encrypted",
 	"Contents": "2",
-	"Comment": "04 04 00 07 57 5E 40 57",
+	"Comment": "24;4;31;31;24", // decrypt this with "password"
 	"Author": "3"
 }
 ```

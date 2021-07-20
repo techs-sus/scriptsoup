@@ -22,7 +22,7 @@
         "affectsGlobalScope": false
       },
       "../src/rorc.ts": {
-        "version": "58789f78e46c84c15c7ad2b88bcd1028450760f87bc47602fb1f2a83e8f6dbd9",
+        "version": "66467e1e6b0bcc3bc64f6bffbfb49045f37db9c41ee00737fc0f8a25039eeed4",
         "affectsGlobalScope": false
       },
       "../src/runner.ts": {

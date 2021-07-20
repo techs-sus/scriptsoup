@@ -7,20 +7,6 @@ local char = owner.Character
 local head = char:FindFirstChild("Head")
 local channel = ""
 local NAME_COLORS = { Color3.new(), Color3.new(1 / 255, 162 / 255, 255 / 255), Color3.new(2 / 255, 184 / 255, 87 / 255), BrickColor.new("Bright violet").Color, BrickColor.new("Bright orange").Color, BrickColor.new("Bright yellow").Color, BrickColor.new("Light reddish violet").Color, BrickColor.new("Brick yellow").Color }
-local function DEC_HEX(IN)
-	local B = 16
-	local K = "0123456789ABCDEF"
-	local OUT = ""
-	local I = 0
-	local D = 0
-	while IN > 0 do
-		I += 1
-		IN = math.floor(IN / B)
-		D = (IN % B) + 1
-		OUT = string.sub(K, D, D) .. OUT
-	end
-	return OUT
-end
 local function encode(input)
 	local encoded = {}
 	do
@@ -45,8 +31,7 @@ end
 local function xorEncrypt(input, password)
 	local _0 = input
 	local _1 = function(byte, index)
-		local dec = bit32.bxor(byte, password[index + 1])
-		return DEC_HEX(dec)
+		return bit32.bxor(byte, password[index % #password + 1])
 	end
 	-- ▼ ReadonlyArray.map ▼
 	local _2 = table.create(#_0)
@@ -65,10 +50,10 @@ local function xorEncrypt(input, password)
 end
 local function xorDecrypt(input, password)
 	local decrypted = ""
-	local _0 = string.split(input, " ")
+	local _0 = string.split(input, ";")
 	local _1 = function(byte, index)
-		local dec = tonumber(byte, 16)
-		local unlocked = bit32.bxor(dec, password[index + 1])
+		local dec = tonumber(byte)
+		local unlocked = bit32.bxor(dec, password[index % #password + 1])
 		decrypted ..= string.char(unlocked)
 	end
 	-- ▼ ReadonlyArray.forEach ▼
@@ -206,105 +191,120 @@ local function subscribe(name)
 		elseif messagetype == "status" then
 			local comment = text:FilterStringAsync(request.Comment, owner.UserId):GetChatForUserAsync(owner.UserId)
 			local box = output(author .. "s new status is " .. comment)
+		elseif messagetype == "diffieHellmanExchange" then
+			local comment = request.Comment
+			local box = output(tag)
+			local target = tonumber(string.split(comment, ";")[2])
+			print(comment, request.Content)
+			if target == owner.UserId then
+				local _3 = string.split(comment, ";")[1]
+				repeat
+					if _3 == ("1a") then
+						exchanges[request.Author] = {}
+						exchanges[request.Author].p = tonumber(string.split(request.Content, ";")[1])
+						exchanges[request.Author].g = tonumber(string.split(request.Content, ";")[2])
+						box:Destroy()
+						local B = (bit32.bxor(exchanges[request.Author].g, privateKey)) % exchanges[request.Author].p
+						send(request.Content .. ";" .. tostring(B), "diffieHellmanExchange", owner.UserId, "1b;" .. tostring(request.Author))
+						break
+					end
+					if _3 == ("1b") then
+						exchanges[request.Author] = {}
+						exchanges[request.Author].p = tonumber(string.split(request.Content, ";")[1])
+						exchanges[request.Author].g = tonumber(string.split(request.Content, ";")[2])
+						exchanges[request.Author].B = tonumber(string.split(request.Content, ";")[3])
+						box:Destroy()
+						local A = (bit32.bxor(exchanges[request.Author].g, privateKey)) % exchanges[request.Author].p
+						send(tostring(A), "diffieHellmanExchange", owner.UserId, "2a;" .. tostring(request.Author))
+						break
+					end
+					if _3 == ("2a") then
+						exchanges[request.Author].A = tonumber(request.Content)
+						exchanges[request.Author].s = (bit32.bxor(exchanges[request.Author].A, privateKey)) % exchanges[request.Author].p
+						send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" .. tostring(request.Author))
+						box:Destroy()
+						break
+					end
+					if _3 == ("2b") then
+						exchanges[request.Author].s = (bit32.bxor(exchanges[request.Author].B, privateKey)) % exchanges[request.Author].p
+						send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" .. tostring(request.Author))
+						box:Destroy()
+						break
+					end
+					if _3 == ("3") then
+						box.Text ..= "[KEYS CONFIFRMED] You can now send encrypted messages to " .. author
+						keys[request.Author] = exchanges[request.Author].s
+						break
+					end
+				until true
+			else
+				box:Destroy()
+			end
 		else
 			local comment = text:FilterStringAsync(request.Comment, owner.UserId):GetChatForUserAsync(owner.UserId)
 			local box = output(tag .. comment)
-			if messagetype == "image" then
-				print("image: " .. request.Content)
-				local image = Instance.new("ImageLabel")
-				image.Size = UDim2.fromOffset(300, 300)
-				image.Position = UDim2.new(0, 5, 0, 25)
-				image.ScaleType = Enum.ScaleType.Fit
-				image.Image = request.Content
-				image.Parent = box
-			elseif messagetype == "sound" then
-				print("sound: " .. request.Content)
-				local button = Instance.new("TextButton")
-				button.Size = UDim2.fromOffset(50, 50)
-				button.Position = UDim2.new(0, 5, 0, 25)
-				button.TextScaled = true
-				button.BackgroundColor3 = Color3.new(0.1, 0.51, 0.98)
-				button.Text = "▶"
-				button.Parent = box
-				local sound = Instance.new("Sound")
-				sound.SoundId = request.Content
-				sound.Volume = 1
-				sound.Looped = true
-				sound.Parent = box
-				local playing = false
-				button.MouseButton1Click:Connect(function()
-					playing = not playing
-					if playing then
-						sound:Play()
-						button.Text = "⏸"
-					else
-						sound:Pause()
-						button.Text = "▶"
+			repeat
+				if messagetype == ("image") then
+					print("image: " .. request.Content)
+					local image = Instance.new("ImageLabel")
+					image.Size = UDim2.fromOffset(300, 300)
+					image.Position = UDim2.new(0, 5, 0, 25)
+					image.ScaleType = Enum.ScaleType.Fit
+					image.Image = request.Content
+					image.Parent = box
+					break
+				end
+				if messagetype == ("sound") then
+					print("sound: " .. request.Content)
+					local button = Instance.new("TextButton")
+					button.Size = UDim2.fromOffset(50, 50)
+					button.Position = UDim2.new(0, 5, 0, 25)
+					button.TextScaled = true
+					button.BackgroundColor3 = Color3.new(0.1, 0.51, 0.98)
+					button.Text = "▶"
+					button.Parent = box
+					local sound = Instance.new("Sound")
+					sound.SoundId = request.Content
+					sound.Volume = 1
+					sound.Looped = true
+					sound.Parent = box
+					local playing = false
+					button.MouseButton1Click:Connect(function()
+						playing = not playing
+						if playing then
+							sound:Play()
+							button.Text = "⏸"
+						else
+							sound:Pause()
+							button.Text = "▶"
+						end
+					end)
+					break
+				end
+				if messagetype == ("ping") then
+					local pingTarget = players:GetPlayerByUserId(tonumber(request.Content))
+					if pingTarget then
+						box.BackgroundTransparency = 0.8
+						box.BackgroundColor3 = Color3.new(1, 0.8, 0.13)
+						box.Text ..= " @" .. pingTarget.Name
 					end
-				end)
-			elseif messagetype == "ping" then
-				local target = players:GetPlayerByUserId(tonumber(request.Content))
-				if target then
-					box.BackgroundTransparency = 0.8
-					box.BackgroundColor3 = Color3.new(1, 0.8, 0.13)
-					box.Text ..= " @" .. target.Name
+					break
 				end
-			elseif messagetype == "diffieHellmanExchange" then
-				local target = tonumber(string.split(comment, ";")[2])
-				if target == owner.UserId then
-					local _3 = string.split(comment, ";")[1]
-					repeat
-						if _3 == ("1a") then
-							exchanges[request.Author] = {}
-							exchanges[request.Author].p = tonumber(string.split(request.Content, ";")[1])
-							exchanges[request.Author].g = tonumber(string.split(request.Content, ";")[2])
-							box:Destroy()
-							local B = (bit32.bxor(exchanges[request.Author].g, privateKey)) % exchanges[request.Author].p
-							send(request.Content .. ";" .. tostring(B), "diffieHellmanExchange", owner.UserId, "1b;" .. tostring(request.Author))
-							return nil
+				if messagetype == ("encrypted") then
+					local messageTarget = tonumber(request.Content)
+					if messageTarget == owner.UserId then
+						-- eslint-disable-next-line roblox-ts/lua-truthiness
+						local _3 = keys[request.Author]
+						if _3 ~= 0 and _3 == _3 and _3 then
+							box.Text = tag .. "[ENCRYPTED] " .. xorDecrypt(comment, encode(tostring(keys[request.Author])))
+						else
+							box.Text = "[ERROR]: Received private message from " .. author .. ", but no keys are available to decrypt."
 						end
-						if _3 == ("1b") then
-							exchanges[request.Author] = {}
-							exchanges[request.Author].p = tonumber(string.split(request.Content, ";")[1])
-							exchanges[request.Author].g = tonumber(string.split(request.Content, ";")[2])
-							exchanges[request.Author].B = tonumber(string.split(request.Content, ";")[3])
-							box:Destroy()
-							local A = (bit32.bxor(exchanges[request.Author].g, privateKey)) % exchanges[request.Author].p
-							send(tostring(A), "diffieHellmanExchange", owner.UserId, "2a;" .. tostring(request.Author))
-							return nil
-						end
-						if _3 == ("2a") then
-							exchanges[request.Author].A = tonumber(request.Content)
-							exchanges[request.Author].s = (bit32.bxor(exchanges[request.Author].A, privateKey)) % exchanges[request.Author].p
-							send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" .. tostring(request.Author))
-							box:Destroy()
-							return nil
-						end
-						if _3 == ("2b") then
-							exchanges[request.Author].s = (bit32.bxor(exchanges[request.Author].B, privateKey)) % exchanges[request.Author].p
-							send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" .. tostring(request.Author))
-							box:Destroy()
-							return nil
-						end
-						if _3 == ("3") then
-							box.Text ..= "[KEYS CONFIFRMED] You can now send encrypted messages to " .. author
-							keys[request.Author] = exchanges[request.Author].s
-							return nil
-						end
-					until true
-				end
-			elseif messagetype == "private" then
-				local target = tonumber(request.Content)
-				if target == owner.UserId then
-					-- eslint-disable-next-line roblox-ts/lua-truthiness
-					local _3 = keys[request.Author]
-					if _3 ~= 0 and _3 == _3 and _3 then
-						box.Text ..= "[ENCRYPTED] " .. xorDecrypt(comment, encode(tostring(keys[request.Author])))
-					else
-						box.Text = "[ERROR]: Received private message from " .. author .. ", but no keys are available to decrypt."
 					end
+					break
 				end
-			end
+				box.Text ..= "[UNKNOWN MESSAGE TYPE]"
+			until true
 		end
 	end)
 end
@@ -396,9 +396,9 @@ local _3 = function(player)
 			-- ▲ ReadonlyArray.join ▲
 			local comment = table.concat(split, _4)
 			local id = players:GetUserIdFromNameAsync(name)
-			send(comment, "diffieHellmanExchange", player.UserId, tostring(id))
+			send(comment, "diffieHellmanExchange", player.UserId, "1a;" .. tostring(id))
 		elseif string.sub(command, 1, 9) == "/private " then
-			local split = string.split(string.sub(command, 7, -1), " ")
+			local split = string.split(string.sub(command, 10, -1), " ")
 			local name = split[1]
 			table.remove(split, 1)
 			-- ▼ ReadonlyArray.join ▼
@@ -409,7 +409,14 @@ local _3 = function(player)
 			-- ▲ ReadonlyArray.join ▲
 			local comment = table.concat(split, _4)
 			local id = players:GetUserIdFromNameAsync(name)
-			send(tostring(id), "encrypted", player.UserId, comment)
+			-- eslint-disable-next-line roblox-ts/lua-truthiness
+			local _5 = keys[id]
+			if _5 ~= 0 and _5 == _5 and _5 then
+				local encrypted = xorEncrypt(encode(comment), encode(tostring(keys[id])))
+				send(tostring(id), "encrypted", player.UserId, encrypted)
+			else
+				output("[ERROR]: Attempt to send private message to someone without encryption key")
+			end
 		end
 	end)
 end
