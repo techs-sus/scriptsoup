@@ -35,7 +35,7 @@ function raycast(origin: Vector3, normal: Vector3): Color3 {
 				let Brightness = distFromPoint((light.Parent as BasePart).Position, result.Position) / light.Range;
 				Brightness = 1 - Brightness;
 				Brightness = math.clamp(Brightness, 0, 1);
-				color = color.Lerp(light.Color, math.clamp((light.Brightness / 120) * Brightness, 0, 0.9));
+				color = color.Lerp(light.Color, math.clamp((light.Brightness / 30) * Brightness, 0, 0.9));
 			});
 			return color;
 		} else {

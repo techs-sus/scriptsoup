@@ -57,7 +57,7 @@ function encode(input: string) {
 }
 function xorEncrypt(input: number[], password: number[]) {
 	const encryptedArray = input.map((byte, index) => {
-		const dec = bit32.bxor(byte, password[index]);
+		const dec = bit32.bxor(byte, password[index % password.size()]);
 		return DEC_HEX(dec);
 	});
 	return encryptedArray.join(" ");
@@ -66,7 +66,7 @@ function xorDecrypt(input: string, password: number[]) {
 	let decrypted = "";
 	input.split(" ").forEach((byte: string, index: number) => {
 		const dec = tonumber(byte, 16)!;
-		const unlocked = bit32.bxor(dec, password[index]);
+		const unlocked = bit32.bxor(dec, password[index % password.size()]);
 		decrypted += string.char(unlocked);
 	});
 	return decrypted;
@@ -175,7 +175,7 @@ function send(
 
 const keys: { [id: number]: number } = {};
 const exchanges: { [id: number]: { [variable: string]: number } } = {};
-const privateKey = math.random();
+const privateKey = math.random(1000000, 9999999);
 
 let subscription: RBXScriptConnection;
 function subscribe(name: string) {
@@ -201,104 +201,112 @@ function subscribe(name: string) {
 		} else {
 			const comment = text.FilterStringAsync(request.Comment!, owner.UserId)!.GetChatForUserAsync(owner.UserId);
 			const box = output(tag + comment);
-			if (messagetype === "image") {
-				print("image: " + request.Content);
-				const image = new Instance("ImageLabel");
-				image.Size = UDim2.fromOffset(300, 300);
-				image.Position = new UDim2(0, 5, 0, 25);
-				image.ScaleType = Enum.ScaleType.Fit;
-				image.Image = request.Content;
-				image.Parent = box;
-			} else if (messagetype === "sound") {
-				print("sound: " + request.Content);
-				const button = new Instance("TextButton");
-				button.Size = UDim2.fromOffset(50, 50);
-				button.Position = new UDim2(0, 5, 0, 25);
-				button.TextScaled = true;
-				button.BackgroundColor3 = new Color3(0.1, 0.51, 0.98);
-				button.Text = "▶";
-				button.Parent = box;
-				const sound = new Instance("Sound");
-				sound.SoundId = request.Content;
-				sound.Volume = 1;
-				sound.Looped = true;
-				sound.Parent = box;
-				let playing = false;
-				button.MouseButton1Click.Connect(() => {
-					playing = !playing;
-					if (playing) {
-						sound.Play();
-						button.Text = "⏸";
-					} else {
-						sound.Pause();
-						button.Text = "▶";
+			switch (messagetype) {
+				case "image":
+					print("image: " + request.Content);
+					const image = new Instance("ImageLabel");
+					image.Size = UDim2.fromOffset(300, 300);
+					image.Position = new UDim2(0, 5, 0, 25);
+					image.ScaleType = Enum.ScaleType.Fit;
+					image.Image = request.Content;
+					image.Parent = box;
+					break;
+				case "sound":
+					print("sound: " + request.Content);
+					const button = new Instance("TextButton");
+					button.Size = UDim2.fromOffset(50, 50);
+					button.Position = new UDim2(0, 5, 0, 25);
+					button.TextScaled = true;
+					button.BackgroundColor3 = new Color3(0.1, 0.51, 0.98);
+					button.Text = "▶";
+					button.Parent = box;
+					const sound = new Instance("Sound");
+					sound.SoundId = request.Content;
+					sound.Volume = 1;
+					sound.Looped = true;
+					sound.Parent = box;
+					let playing = false;
+					button.MouseButton1Click.Connect(() => {
+						playing = !playing;
+						if (playing) {
+							sound.Play();
+							button.Text = "⏸";
+						} else {
+							sound.Pause();
+							button.Text = "▶";
+						}
+					});
+					break;
+				case "ping":
+					const pingTarget: Player = players.GetPlayerByUserId(tonumber(request.Content)!) as Player;
+					if (pingTarget) {
+						box.BackgroundTransparency = 0.8;
+						box.BackgroundColor3 = new Color3(1, 0.8, 0.13);
+						box.Text += " @" + pingTarget.Name;
 					}
-				});
-			} else if (messagetype === "ping") {
-				const target: Player = players.GetPlayerByUserId(tonumber(request.Content)!) as Player;
-				if (target) {
-					box.BackgroundTransparency = 0.8;
-					box.BackgroundColor3 = new Color3(1, 0.8, 0.13);
-					box.Text += " @" + target.Name;
-				}
-			} else if (messagetype === "diffieHellmanExchange") {
-				const target: number = tonumber(comment.split(";")[1])!;
-				if (target === owner.UserId) {
-					switch (comment.split(";")[0]) {
-						case "1a": // bob
-							exchanges[request.Author] = {};
-							exchanges[request.Author].p = tonumber(request.Content.split(";")[0])!;
-							exchanges[request.Author].g = tonumber(request.Content.split(";")[1])!;
-							box.Destroy();
-							const B = (exchanges[request.Author].g ^ privateKey) % exchanges[request.Author].p;
-							send(
-								request.Content + ";" + B,
-								"diffieHellmanExchange",
-								owner.UserId,
-								"1b;" + request.Author,
-							);
-							return;
-						case "1b": // alice
-							exchanges[request.Author] = {};
-							exchanges[request.Author].p = tonumber(request.Content.split(";")[0])!;
-							exchanges[request.Author].g = tonumber(request.Content.split(";")[1])!;
-							exchanges[request.Author].B = tonumber(request.Content.split(";")[2])!;
-							box.Destroy();
-							const A = (exchanges[request.Author].g ^ privateKey) % exchanges[request.Author].p;
-							send(tostring(A), "diffieHellmanExchange", owner.UserId, "2a;" + request.Author);
-							return;
-						case "2a": // bob
-							exchanges[request.Author].A = tonumber(request.Content)!;
-							exchanges[request.Author].s =
-								(exchanges[request.Author].A ^ privateKey) % exchanges[request.Author].p;
-							send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" + request.Author);
-							box.Destroy();
-							return;
-						case "2b": // alice
-							exchanges[request.Author].s =
-								(exchanges[request.Author].B ^ privateKey) % exchanges[request.Author].p;
-							send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" + request.Author);
-							box.Destroy();
-							return;
-						case "3": // bob
-							box.Text += "[KEYS CONFIFRMED] You can now send encrypted messages to " + author;
-							keys[request.Author] = exchanges[request.Author].s;
-							return;
+					break;
+				case "diffieHellmanExchange":
+					const target: number = tonumber(comment.split(";")[1])!;
+					if (target === owner.UserId) {
+						switch (comment.split(";")[0]) {
+							case "1a": // bob
+								exchanges[request.Author] = {};
+								exchanges[request.Author].p = tonumber(request.Content.split(";")[0])!;
+								exchanges[request.Author].g = tonumber(request.Content.split(";")[1])!;
+								box.Destroy();
+								const B = (exchanges[request.Author].g ^ privateKey) % exchanges[request.Author].p;
+								send(
+									request.Content + ";" + B,
+									"diffieHellmanExchange",
+									owner.UserId,
+									"1b;" + request.Author,
+								);
+								break;
+							case "1b": // alice
+								exchanges[request.Author] = {};
+								exchanges[request.Author].p = tonumber(request.Content.split(";")[0])!;
+								exchanges[request.Author].g = tonumber(request.Content.split(";")[1])!;
+								exchanges[request.Author].B = tonumber(request.Content.split(";")[2])!;
+								box.Destroy();
+								const A = (exchanges[request.Author].g ^ privateKey) % exchanges[request.Author].p;
+								send(tostring(A), "diffieHellmanExchange", owner.UserId, "2a;" + request.Author);
+								break;
+							case "2a": // bob
+								exchanges[request.Author].A = tonumber(request.Content)!;
+								exchanges[request.Author].s =
+									(exchanges[request.Author].A ^ privateKey) % exchanges[request.Author].p;
+								send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" + request.Author);
+								box.Destroy();
+								break;
+							case "2b": // alice
+								exchanges[request.Author].s =
+									(exchanges[request.Author].B ^ privateKey) % exchanges[request.Author].p;
+								send("confirmed", "diffieHellmanExchange", owner.UserId, "3;" + request.Author);
+								box.Destroy();
+								break;
+							case "3": // bob
+								box.Text += "[KEYS CONFIFRMED] You can now send encrypted messages to " + author;
+								keys[request.Author] = exchanges[request.Author].s;
+								break;
+						}
 					}
-				}
-			} else if (messagetype === "private") {
-				const target: number = tonumber(request.Content)!;
-				if (target === owner.UserId) {
-					// eslint-disable-next-line roblox-ts/lua-truthiness
-					if (keys[request.Author]) {
-						box.Text += "[ENCRYPTED] " + xorDecrypt(comment, encode(tostring(keys[request.Author])));
-					} else {
-						box.Text =
-							"[ERROR]: Received private message from " +
-							author +
-							", but no keys are available to decrypt.";
+					break;
+				case "private":
+					const messageTarget: number = tonumber(request.Content)!;
+					if (messageTarget === owner.UserId) {
+						// eslint-disable-next-line roblox-ts/lua-truthiness
+						if (keys[request.Author]) {
+							box.Text += "[ENCRYPTED] " + xorDecrypt(comment, encode(tostring(keys[request.Author])));
+						} else {
+							box.Text =
+								"[ERROR]: Received private message from " +
+								author +
+								", but no keys are available to decrypt.";
+						}
 					}
-				}
+					break;
+				default:
+					box.Text += "[UNKNOWN MESSAGE TYPE]";
 			}
 		}
 	});

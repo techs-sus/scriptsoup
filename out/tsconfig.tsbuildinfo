@@ -18,11 +18,11 @@
         "affectsGlobalScope": false
       },
       "../src/raycast.ts": {
-        "version": "0ca314938ae38ffcda5fcc73581402e9701a3ff6b35d1b331ec3f67e2f5a4de7",
+        "version": "33f113f01bd52d8412ea3e47f651da5653c765be9a4a8ca6fdebde8e054d247f",
         "affectsGlobalScope": false
       },
       "../src/rorc.ts": {
-        "version": "9ecabc423de44e09a2a9641b255163608a453175320b7fbdff7c12b5f0f92344",
+        "version": "58789f78e46c84c15c7ad2b88bcd1028450760f87bc47602fb1f2a83e8f6dbd9",
         "affectsGlobalScope": false
       },
       "../src/runner.ts": {

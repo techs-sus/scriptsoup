@@ -183,7 +183,7 @@ local function send(message, messagetype, author, comment)
 end
 local keys = {}
 local exchanges = {}
-local privateKey = math.random()
+local privateKey = math.random(1000000, 9999999)
 local subscription
 local function subscribe(name)
 	local _2 = subscription

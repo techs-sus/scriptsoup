@@ -50,7 +50,7 @@ local function raycast(origin, normal)
 				local Brightness = distFromPoint((light.Parent).Position, result.Position) / light.Range
 				Brightness = 1 - Brightness
 				Brightness = math.clamp(Brightness, 0, 1)
-				color = color:Lerp(light.Color, math.clamp((light.Brightness / 120) * Brightness, 0, 0.9))
+				color = color:Lerp(light.Color, math.clamp((light.Brightness / 30) * Brightness, 0, 0.9))
 			end
 			-- ▼ ReadonlyArray.forEach ▼
 			for _4, _5 in ipairs(_2) do
