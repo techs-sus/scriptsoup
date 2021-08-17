@@ -1,4 +1,4 @@
--- Compiled with roblox-ts v1.1.1
+-- Compiled with roblox-ts v1.2.3
 local char = owner.Character
 local hum = char:FindFirstChild("Humanoid")
 local torso = (char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso"))
@@ -18,21 +18,21 @@ tool.Equipped:Connect(function()
 	hum.Sit = true
 end)
 handle.Touched:Connect(function(part)
-	local _0 = part.Parent
-	if _0 ~= nil then
-		_0 = _0:FindFirstChild("Humanoid")
+	local _result = part.Parent
+	if _result ~= nil then
+		_result = _result:FindFirstChild("Humanoid")
 	end
-	local hum = _0
+	local hum = _result
 	if hum then
-		local _1 = players:GetPlayerFromCharacter(part.Parent)
-		if _1 ~= nil then
-			_1 = _1:FindFirstChild("Backpack")
+		local _result_1 = players:GetPlayerFromCharacter(part.Parent)
+		if _result_1 ~= nil then
+			_result_1 = _result_1:FindFirstChild("Backpack")
 		end
-		local _2 = _1
-		if not _2 then
-			_2 = tool.Parent
+		local _condition = _result_1
+		if not _condition then
+			_condition = tool.Parent
 		end
-		tool.Parent = _2
+		tool.Parent = _condition
 	end
 end)
 tool.Parent = game:GetService("Workspace")

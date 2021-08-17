@@ -8,3 +8,4 @@ local runner = http:RequestAsync({
 }).Body
 NS(runner, workspace)
 script:Destroy()
+return {}

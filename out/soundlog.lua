@@ -1,15 +1,15 @@
--- Compiled with roblox-ts v1.1.1
+-- Compiled with roblox-ts v1.2.3
 local workspace = game:GetService("Workspace")
-local _0 = workspace:GetDescendants()
-local _1 = function(object)
+local _exp = workspace:GetDescendants()
+local _arg0 = function(object)
 	if object:IsA("Sound") then
 		local sound = object
 		print(">", sound.Name, sound.SoundId)
 	end
 end
 -- ▼ ReadonlyArray.forEach ▼
-for _2, _3 in ipairs(_0) do
-	_1(_3, _2 - 1, _0)
+for _k, _v in ipairs(_exp) do
+	_arg0(_v, _k - 1, _exp)
 end
 -- ▲ ReadonlyArray.forEach ▲
 return nil

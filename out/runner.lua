@@ -1,4 +1,4 @@
--- Compiled with roblox-ts v1.1.1
+-- Compiled with roblox-ts v1.2.3
 local workspace = game:GetService("Workspace")
 local API = "https://raw.githubusercontent.com/snoo8/scriptsoup/main"
 local defaultHeaders = {
@@ -100,9 +100,9 @@ local function show(text)
 		screen.Transparency = 0.6
 		screen.Reflectance = 0.2
 		screen.Size = Vector3.new(10, 7, 1)
-		local _0 = head.CFrame
-		local _1 = Vector3.new(0, 0, 5)
-		screen.CFrame = _0 + _1
+		local _cFrame = head.CFrame
+		local _vector3 = Vector3.new(0, 0, 5)
+		screen.CFrame = _cFrame + _vector3
 		screen.Anchored = true
 		local gui = Instance.new("SurfaceGui", screen)
 		gui.Face = Enum.NormalId.Back
@@ -123,41 +123,65 @@ local function show(text)
 		print(text)
 	end
 end
+local forceField = Instance.new("Part")
+forceField.Shape = Enum.PartType.Ball
+forceField.Size = Vector3.new(6, 6, 6)
+forceField.Material = Enum.Material.ForceField
+forceField.BrickColor = BrickColor.Black()
+local forceFieldEnabled = false
+local forceFieldMode = "destroy"
+forceField.Touched:Connect(function(part)
+	if not part:IsDescendantOf(owner.Character) then
+		repeat
+			if forceFieldMode == ("d") then
+				part:Destroy()
+				break
+			end
+			if forceFieldMode == ("r") then
+				local _fn = part
+				local _position = part.Position
+				local _position_1 = forceField.Position
+				_fn:ApplyImpulse((_position - _position_1) * 50)
+				break
+			end
+			if forceFieldMode == ("x") then
+				Instance.new("ForceField", owner.Character)
+				Instance.new("Explosion", part).Position = part.Position
+				break
+			end
+		until true
+	end
+end)
 owner.Chatted:Connect(function(message)
 	if string.sub(message, 2, 2) == "'" then
 		local command = { string.sub(message, 1, 1), string.sub(message, 3, -1) }
 		local split = string.split(command[2], "'")
-		local _0 = command[1]
+		local _exp = command[1]
 		repeat
-			local _1 = false
-			if _0 == ("r") then
+			local _fallthrough = false
+			if _exp == ("r") then
 				local requested = get("/out/" .. command[2] .. ".lua")
-				local _2 = requested
-				local _3 = typeof(_2) == "string"
-				if _3 then
-					_3 = requested ~= ""
-				end
-				if _3 then
+				if typeof(requested) == "string" and requested ~= "" then
 					NS(requested, script)
 				else
 					warn("Invalid script name!")
 				end
 				break
 			end
-			if _0 == ("q") then
+			if _exp == ("q") then
 				NS(command[2], script)
 				break
 			end
-			if _0 == ("v") then
+			if _exp == ("v") then
 				local source = get(command[2])
 				show(source)
 				break
 			end
-			if _0 == ("c") then
+			if _exp == ("c") then
 				script:ClearAllChildren()
 				break
 			end
-			if _0 == ("a") then
+			if _exp == ("a") then
 				local targetCommand = commands[split[1]]
 				if targetCommand == nil then
 					warn("invalid command")
@@ -166,8 +190,42 @@ owner.Chatted:Connect(function(message)
 				targetCommand(split)
 				break
 			end
-			if _0 == ("e") then
+			if _exp == ("e") then
 				print(loadstring("return " .. command[2])())
+				_fallthrough = true
+			end
+			if _fallthrough or _exp == ("f") then
+				local _exp_1 = command[2]
+				repeat
+					local _fallthrough_1 = false
+					if _exp_1 == ("t") then
+						forceFieldEnabled = not forceFieldEnabled
+						if forceFieldEnabled then
+							forceField.Parent = script
+						else
+							forceField.Parent = nil
+						end
+						_fallthrough_1 = true
+					end
+					if _fallthrough_1 or _exp_1 == ("m") then
+						forceFieldMode = command[3]
+						repeat
+							if forceFieldMode == ("d") then
+								forceField.BrickColor = BrickColor.Black()
+								break
+							end
+							if forceFieldMode == ("r") then
+								forceField.BrickColor = BrickColor.Blue()
+								break
+							end
+							if forceFieldMode == ("x") then
+								forceField.BrickColor = BrickColor.Red()
+								break
+							end
+						until true
+					end
+				until true
+				break
 			end
 		until true
 	end

@@ -1,4 +1,5 @@
 # COMRADIO PROTOCOL v2
+This protocol is deprecated! Please use comradio v3 instead.
 
 ### Topic names
 The default topic name is "comradio:".
@@ -133,7 +134,7 @@ local s = A^b % p
 	"Author": 3
 }
 ```
-9. Alice and Bob now share a secret key.
+9. Alice and Bob now share a secret key.dwww
 This can be used for creating private channels to share with another listener or
 sending encrypted messages.
 The shared key should be stored for later usage (see section below).

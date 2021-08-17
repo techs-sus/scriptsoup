@@ -1,10 +1,10 @@
--- Compiled with roblox-ts v1.1.1
+-- Compiled with roblox-ts v1.2.3
 local http = game:GetService("HttpService")
 local screen = loadstring(http:GetAsync("https://raw.githubusercontent.com/snoo8/scriptsoup/main/models/tormuxUI.lua"))()
 screen.Parent = script
-local _0 = (owner.Character:FindFirstChild("Head")).CFrame
-local _1 = CFrame.new(0, 0, -5)
-screen.CFrame = _0 * _1
+local _cFrame = (owner.Character:FindFirstChild("Head")).CFrame
+local _cFrame_1 = CFrame.new(0, 0, -5)
+screen.CFrame = _cFrame * _cFrame_1
 local UI = screen:FindFirstChild("SurfaceGui"):FindFirstChild("Frame")
 local out = UI:FindFirstChild("output")
 local widgets = UI:FindFirstChild("widgets")
@@ -88,8 +88,8 @@ local function log(text)
 	box.Parent = out
 	if #out:GetChildren() > 11 then
 		local oldest
-		local _2 = out:GetChildren()
-		local _3 = function(box)
+		local _exp = out:GetChildren()
+		local _arg0 = function(box)
 			if box:IsA("TextBox") then
 				if oldest == nil then
 					oldest = box
@@ -99,8 +99,8 @@ local function log(text)
 			end
 		end
 		-- ▼ ReadonlyArray.forEach ▼
-		for _4, _5 in ipairs(_2) do
-			_3(_5, _4 - 1, _2)
+		for _k, _v in ipairs(_exp) do
+			_arg0(_v, _k - 1, _exp)
 		end
 		-- ▲ ReadonlyArray.forEach ▲
 		oldest:Destroy()
@@ -117,9 +117,9 @@ local terminalLib = {
 	end,
 	widgets = availableWidgets,
 	setWidget = function(num, widget)
-		local _2 = widgets:FindFirstChild(num)
-		if _2 ~= nil then
-			_2:Destroy()
+		local _result = widgets:FindFirstChild(num)
+		if _result ~= nil then
+			_result:Destroy()
 		end
 		local newWidget = widget()
 		newWidget.Name = num

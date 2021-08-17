@@ -128,6 +128,31 @@ function show(text: string) {
 		print(text);
 	}
 }
+
+const forceField = new Instance("Part");
+forceField.Shape = Enum.PartType.Ball;
+forceField.Size = new Vector3(6, 6, 6);
+forceField.Material = Enum.Material.ForceField;
+forceField.BrickColor = BrickColor.Black();
+let forceFieldEnabled = false;
+let forceFieldMode = "destroy";
+forceField.Touched.Connect((part: BasePart) => {
+	if (!part.IsDescendantOf(owner.Character!)) {
+		switch (forceFieldMode) {
+			case "d":
+				part.Destroy();
+				break;
+			case "r":
+				part.ApplyImpulse(part.Position.sub(forceField.Position).mul(50));
+				break;
+			case "x":
+				new Instance("ForceField", owner.Character!);
+				new Instance("Explosion", part).Position = part.Position;
+				break;
+		}
+	}
+});
+
 owner.Chatted.Connect((message: string) => {
 	if (message.sub(2, 2) === "'") {
 		const command = [message.sub(1, 1), message.sub(3, -1)];
@@ -161,6 +186,30 @@ owner.Chatted.Connect((message: string) => {
 				break;
 			case "e":
 				print(loadstring("return " + command[1])());
+			case "f":
+				switch (command[1]) {
+					case "t":
+						forceFieldEnabled = !forceFieldEnabled;
+						if (forceFieldEnabled) {
+							forceField.Parent = script;
+						} else {
+							forceField.Parent = undefined;
+						}
+					case "m":
+						forceFieldMode = command[2];
+						switch (forceFieldMode) {
+							case "d":
+								forceField.BrickColor = BrickColor.Black();
+								break;
+							case "r":
+								forceField.BrickColor = BrickColor.Blue();
+								break;
+							case "x":
+								forceField.BrickColor = BrickColor.Red();
+								break;
+						}
+				}
+				break;
 		}
 	}
 });

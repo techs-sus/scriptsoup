@@ -1,4 +1,4 @@
--- Compiled with roblox-ts v1.1.1
+-- Compiled with roblox-ts v1.2.3
 local tweenService = game:GetService("TweenService")
 local debris = game:GetService("Debris")
 local sword = Instance.new("Tool")
@@ -34,7 +34,7 @@ remote.OnServerEvent:Connect(function(plr, mode, direction, origin)
 		return nil
 	end
 	repeat
-		local _0 = false
+		local _fallthrough = false
 		if mode == ("down") then
 			charging = true
 			while charging do
@@ -44,18 +44,17 @@ remote.OnServerEvent:Connect(function(plr, mode, direction, origin)
 				ex.DestroyJointRadiusPercent = 0
 				ex.ExplosionType = Enum.ExplosionType.NoCraters
 				ex.Position = handle.Position
-				ex.BlastPressure = 0;
 				ex.Parent = handle.Parent
 				debris:AddItem(ex, 1)
 			end
 			local ex = Instance.new("Explosion")
 			ex.Position = handle.Position
-			ex.BlastPressure += charge * 1000
+			ex.BlastPressure = charging * 1000
 			ex.Parent = handle.Parent
 			debris:AddItem(ex, 1)
-			_0 = true
+			_fallthrough = true
 		end
-		if _0 or mode == ("up") then
+		if _fallthrough or mode == ("up") then
 			charging = false
 		end
 	until true

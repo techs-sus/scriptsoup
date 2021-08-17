@@ -1,23 +1,21 @@
--- Compiled with roblox-ts v1.1.1
+-- Compiled with roblox-ts v1.2.3
 local camera = Instance.new("Part")
 camera.CFrame = CFrame.new(20, 10, 15)
 camera.Size = Vector3.new(0.5, 0.5, 0.5)
 camera.Anchored = true
 camera.Parent = script
 local pointlights = {}
-local _0 = game.Workspace:GetDescendants()
-local _1 = function(light)
+local _exp = game.Workspace:GetDescendants()
+local _arg0 = function(light)
 	if light:IsA("PointLight") then
-		local _2 = pointlights
-		local _3 = light
 		-- ▼ Array.push ▼
-		_2[#_2 + 1] = _3
+		pointlights[#pointlights + 1] = light
 		-- ▲ Array.push ▲
 	end
 end
 -- ▼ ReadonlyArray.forEach ▼
-for _2, _3 in ipairs(_0) do
-	_1(_3, _2 - 1, _0)
+for _k, _v in ipairs(_exp) do
+	_arg0(_v, _k - 1, _exp)
 end
 -- ▲ ReadonlyArray.forEach ▲
 local distFromPoint
@@ -27,17 +25,16 @@ local function raycast(origin, normal)
 		if result.Instance ~= game.Workspace.Terrain then
 			local color = result.Instance.Color
 			if result.Instance.Reflectance > 0 then
-				local _2 = normal
-				local _3 = result.Normal
-				local _4 = normal:Dot(result.Normal) * 2
-				local reflectedNormal = (_2 - (_3 * _4)) * 100
+				local _normal = result.Normal
+				local _arg0_1 = normal:Dot(result.Normal) * 2
+				local reflectedNormal = (normal - (_normal * _arg0_1)) * 100
 				color = color:Lerp(raycast(result.Position, reflectedNormal), result.Instance.Reflectance)
 			end
 			if result.Instance.Transparency > 0 then
-				local _2 = color
-				local _3 = result.Position
-				local _4 = normal.Unit * 0.05
-				color = _2:Lerp(raycast(_3 + _4, normal), result.Instance.Transparency)
+				local _fn = color
+				local _position = result.Position
+				local _arg0_1 = normal.Unit * 0.05
+				color = _fn:Lerp(raycast(_position + _arg0_1, normal), result.Instance.Transparency)
 			end
 			--[[
 				was very ugly
@@ -45,16 +42,15 @@ local function raycast(origin, normal)
 				color = color.Lerp(new Color3(0, 0, 0), 1 - result.Instance.Transparency);
 				}
 			]]
-			local _2 = pointlights
-			local _3 = function(light)
+			local _arg0_1 = function(light)
 				local Brightness = distFromPoint((light.Parent).Position, result.Position) / light.Range
 				Brightness = 1 - Brightness
 				Brightness = math.clamp(Brightness, 0, 1)
 				color = color:Lerp(light.Color, math.clamp((light.Brightness / 30) * Brightness, 0, 0.9))
 			end
 			-- ▼ ReadonlyArray.forEach ▼
-			for _4, _5 in ipairs(_2) do
-				_3(_5, _4 - 1, _2)
+			for _k, _v in ipairs(pointlights) do
+				_arg0_1(_v, _k - 1, pointlights)
 			end
 			-- ▲ ReadonlyArray.forEach ▲
 			return color
@@ -71,20 +67,34 @@ local function eqColor(a, b)
 	return diffr < 0.02 and diffg < 0.02 and diffb < 0.02
 end
 function distFromPoint(center, point)
-	local _2 = point
-	local _3 = center
-	return (_2 - _3).Magnitude
+	return (point - center).Magnitude
 end
 local pixels = {}
 do
-	local _2 = -100
-	while _2 < 100 do
-		local x = _2
+	local x = -100
+	local _shouldIncrement = false
+	while true do
+		if _shouldIncrement then
+			x += 1
+		else
+			_shouldIncrement = true
+		end
+		if not (x < 100) then
+			break
+		end
 		pixels[x + 1] = {}
 		do
-			local _3 = -100
-			while _3 < 100 do
-				local y = _3
+			local y = -100
+			local _shouldIncrement_1 = false
+			while true do
+				if _shouldIncrement_1 then
+					y += 1
+				else
+					_shouldIncrement_1 = true
+				end
+				if not (y < 100) then
+					break
+				end
 				if y % 16 == 0 then
 					wait(1 / 40)
 				end
@@ -93,9 +103,9 @@ do
 				pixel.Anchored = true
 				pixel.Position = Vector3.new(x / 20 + 20, y / 20 + 10, 20)
 				pixels[x + 1][y + 1] = pixel
-				local _4 = CFrame.new(20, 10, 15)
-				local _5 = CFrame.Angles(y / 200, x / 200, 0)
-				local cf = _4 * _5
+				local _cFrame = CFrame.new(20, 10, 15)
+				local _arg0_1 = CFrame.Angles(y / 200, x / 200, 0)
+				local cf = _cFrame * _arg0_1
 				local normal = cf.LookVector * 100
 				local origin = cf.Position
 				local color = raycast(origin, normal)
@@ -103,26 +113,20 @@ do
 					local prevPixel = pixels[x - 1 + 1][y + 1]
 					if eqColor(prevPixel.Color, color) then
 						pixels[x + 1][y + 1] = prevPixel
-						local _6 = prevPixel.Position
-						local _7 = Vector3.new(0.025, 0, 0)
-						prevPixel.Position = _6 + _7
-						local _8 = prevPixel.Size
-						local _9 = Vector3.new(0.05, 0, 0)
-						prevPixel.Size = _8 + _9
+						local _position = prevPixel.Position
+						local _vector3 = Vector3.new(0.025, 0, 0)
+						prevPixel.Position = _position + _vector3
+						local _size = prevPixel.Size
+						local _vector3_1 = Vector3.new(0.05, 0, 0)
+						prevPixel.Size = _size + _vector3_1
 						pixel:Destroy()
-						_3 = y
-						_3 += 1
 						continue
 					end
 				end
 				pixel.Color = color
 				pixel.Parent = script
-				_3 = y
-				_3 += 1
 			end
 		end
-		_2 = x
-		_2 += 1
 	end
 end
 return nil

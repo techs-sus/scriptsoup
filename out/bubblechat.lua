@@ -1,4 +1,4 @@
--- Compiled with roblox-ts v1.1.1
+-- Compiled with roblox-ts v1.2.3
 local chat = game:GetService("Chat")
 chat.BubbleChatEnabled = true
 local function bubblechat(player)
@@ -12,13 +12,13 @@ local function bubblechat(player)
 	end)
 end
 local players = game:GetService("Players")
-local _0 = players:GetPlayers()
-local _1 = function(player)
+local _exp = players:GetPlayers()
+local _arg0 = function(player)
 	bubblechat(player)
 end
 -- ▼ ReadonlyArray.forEach ▼
-for _2, _3 in ipairs(_0) do
-	_1(_3, _2 - 1, _0)
+for _k, _v in ipairs(_exp) do
+	_arg0(_v, _k - 1, _exp)
 end
 -- ▲ ReadonlyArray.forEach ▲
 players.PlayerAdded:Connect(bubblechat)

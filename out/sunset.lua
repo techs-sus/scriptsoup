@@ -1,4 +1,4 @@
--- Compiled with roblox-ts v1.1.1
+-- Compiled with roblox-ts v1.2.3
 local sky = Instance.new("Sky")
 sky.SkyboxBk = "http://www.roblox.com/asset/?id=458016711"
 sky.SkyboxDn = "http://www.roblox.com/asset/?id=458016826"
