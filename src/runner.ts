@@ -131,16 +131,26 @@ function show(text: string) {
 
 const forceField = new Instance("Part");
 forceField.Shape = Enum.PartType.Ball;
-forceField.Size = new Vector3(6, 6, 6);
+forceField.Size = new Vector3(8, 8, 8);
 forceField.Material = Enum.Material.ForceField;
 forceField.BrickColor = BrickColor.Black();
+//forceField.CanCollide = false;
+forceField.Massless = true;
+let forceFieldWeld = new Instance("Weld");
+forceFieldWeld.Part0 = owner.Character!.FindFirstChild("HumanoidRootPart") as BasePart;
+forceFieldWeld.Part1 = forceField;
+forceFieldWeld.Parent = forceField;
+
 let forceFieldEnabled = false;
-let forceFieldMode = "destroy";
+let forceFieldMode = "d";
 forceField.Touched.Connect((part: BasePart) => {
 	if (!part.IsDescendantOf(owner.Character!)) {
+		print(forceFieldMode);
 		switch (forceFieldMode) {
 			case "d":
-				part.Destroy();
+				if (!part.Anchored) {
+					part.Destroy();
+				}
 				break;
 			case "r":
 				part.ApplyImpulse(part.Position.sub(forceField.Position).mul(50));
@@ -187,7 +197,8 @@ owner.Chatted.Connect((message: string) => {
 			case "e":
 				print(loadstring("return " + command[1])());
 			case "f":
-				switch (command[1]) {
+				const params = command[1].split("'");
+				switch (params[0]) {
 					case "t":
 						forceFieldEnabled = !forceFieldEnabled;
 						if (forceFieldEnabled) {
@@ -195,8 +206,10 @@ owner.Chatted.Connect((message: string) => {
 						} else {
 							forceField.Parent = undefined;
 						}
+						break;
 					case "m":
-						forceFieldMode = command[2];
+						print("set", params[1]);
+						forceFieldMode = params[1];
 						switch (forceFieldMode) {
 							case "d":
 								forceField.BrickColor = BrickColor.Black();
@@ -208,6 +221,13 @@ owner.Chatted.Connect((message: string) => {
 								forceField.BrickColor = BrickColor.Red();
 								break;
 						}
+						break;
+					case "fw":
+						forceFieldWeld = new Instance("Weld");
+						forceFieldWeld.Part0 = owner.Character!.FindFirstChild("HumanoidRootPart") as BasePart;
+						forceFieldWeld.Part1 = forceField;
+						forceFieldWeld.Parent = forceField;
+						break;
 				}
 				break;
 		}

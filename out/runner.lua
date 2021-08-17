@@ -125,16 +125,25 @@ local function show(text)
 end
 local forceField = Instance.new("Part")
 forceField.Shape = Enum.PartType.Ball
-forceField.Size = Vector3.new(6, 6, 6)
+forceField.Size = Vector3.new(8, 8, 8)
 forceField.Material = Enum.Material.ForceField
 forceField.BrickColor = BrickColor.Black()
+-- forceField.CanCollide = false;
+forceField.Massless = true
+local forceFieldWeld = Instance.new("Weld")
+forceFieldWeld.Part0 = owner.Character:FindFirstChild("HumanoidRootPart")
+forceFieldWeld.Part1 = forceField
+forceFieldWeld.Parent = forceField
 local forceFieldEnabled = false
-local forceFieldMode = "destroy"
+local forceFieldMode = "d"
 forceField.Touched:Connect(function(part)
 	if not part:IsDescendantOf(owner.Character) then
+		print(forceFieldMode)
 		repeat
 			if forceFieldMode == ("d") then
-				part:Destroy()
+				if not part.Anchored then
+					part:Destroy()
+				end
 				break
 			end
 			if forceFieldMode == ("r") then
@@ -195,9 +204,9 @@ owner.Chatted:Connect(function(message)
 				_fallthrough = true
 			end
 			if _fallthrough or _exp == ("f") then
-				local _exp_1 = command[2]
+				local params = string.split(command[2], "'")
+				local _exp_1 = params[1]
 				repeat
-					local _fallthrough_1 = false
 					if _exp_1 == ("t") then
 						forceFieldEnabled = not forceFieldEnabled
 						if forceFieldEnabled then
@@ -205,10 +214,11 @@ owner.Chatted:Connect(function(message)
 						else
 							forceField.Parent = nil
 						end
-						_fallthrough_1 = true
+						break
 					end
-					if _fallthrough_1 or _exp_1 == ("m") then
-						forceFieldMode = command[3]
+					if _exp_1 == ("m") then
+						print("set", params[2])
+						forceFieldMode = params[2]
 						repeat
 							if forceFieldMode == ("d") then
 								forceField.BrickColor = BrickColor.Black()
@@ -223,6 +233,14 @@ owner.Chatted:Connect(function(message)
 								break
 							end
 						until true
+						break
+					end
+					if _exp_1 == ("fw") then
+						forceFieldWeld = Instance.new("Weld")
+						forceFieldWeld.Part0 = owner.Character:FindFirstChild("HumanoidRootPart")
+						forceFieldWeld.Part1 = forceField
+						forceFieldWeld.Parent = forceField
+						break
 					end
 				until true
 				break
