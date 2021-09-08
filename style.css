@@ -1,0 +1,11 @@
+body {
+	background-color: tan;
+}
+
+.container {
+	background-color: white;
+	border-radius: 4px;
+	padding: 5px;
+	width: 85%;
+	margin: 5px auto 10px auto;
+}
