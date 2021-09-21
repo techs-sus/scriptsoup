@@ -1,20 +1,52 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>scriptsoup</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta charset="UTF-8">
-		<meta name="description" content="List of epic things">
-		<meta name="keywords" content="Lua, Roblox">
-		<meta name="author" content="snoo8">
-		<link href="./style.css" rel="stylesheet">
-	</head>
-	<body>
-		<div class="container">
-			<h1>Scripts</h1>
-			<button type="button" onclick="updateList()">Update</button>
-			<dl id="list"></dl>
-			<script src="./script.js"></script>
-		</div>
-	</body>
+  <head>
+    <title>scriptsoup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" />
+    <meta name="description" content="List of epic things" />
+    <meta name="keywords" content="Lua, Roblox" />
+    <meta name="author" content="snoo8" />
+    <link href="./style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Scripts</h1>
+      <button type="button" onclick="updateList()">Update</button>
+      <dl id="list"></dl>
+      <script>
+        var list = document.getElementById("list");
+        function getRequest(url, callback) {
+          var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = callback;
+          xhttp.open("GET", url);
+          xhttp.send();
+        }
+        function updateList() {
+          getRequest(
+            "https://api.github.com/repos/snoo8/scriptsoup/contents/out",
+            function () {
+              if (this.readyState == 4 && this.status == 200) {
+                list.innerHTML = "";
+                var converted = JSON.parse(this.responseText);
+                converted.forEach((element) => {
+                  var title = document.createElement("dt");
+                  title.innerHTML = `<a href="${element.html_url}">${element.name}</a>`;
+                  var description = document.createElement("dd");
+                  getRequest(element.download_url, function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                      description.innerHTML = this.responseText.substr(35, 60);
+                    }
+                  });
+                  list.appendChild(title);
+                  list.appendChild(description);
+                });
+              }
+            }
+          );
+        }
+        updateList();
+      </script>
+    </div>
+  </body>
 </html>
