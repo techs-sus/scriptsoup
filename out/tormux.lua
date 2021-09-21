@@ -1,4 +1,5 @@
 -- Compiled with roblox-ts v1.2.3
+-- Bad, ugly, stupid and terrible console (how original)  //
 local http = game:GetService("HttpService")
 local screen = loadstring(http:GetAsync("https://raw.githubusercontent.com/snoo8/scriptsoup/main/models/tormuxUI.lua"))()
 screen.Parent = script

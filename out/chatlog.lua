@@ -1,4 +1,5 @@
 -- Compiled with roblox-ts v1.2.3
+-- Log the chat to output                                 //
 local players = game:GetService("Players")
 local function log(player)
 	local username = player.Name

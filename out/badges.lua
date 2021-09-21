@@ -1,4 +1,5 @@
 -- Compiled with roblox-ts v1.2.3
+-- Give everyone in the server badges in their nametag    //
 local http = game:GetService("HttpService")
 local badges = { {
 	badge = "🍰",

@@ -1,4 +1,5 @@
 -- Compiled with roblox-ts v1.2.3
+-- Add sunset skybox                                      //
 local sky = Instance.new("Sky")
 sky.SkyboxBk = "http://www.roblox.com/asset/?id=458016711"
 sky.SkyboxDn = "http://www.roblox.com/asset/?id=458016826"

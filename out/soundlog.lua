@@ -1,4 +1,5 @@
 -- Compiled with roblox-ts v1.2.3
+-- Log all sound IDs currently being used to the output   //
 local workspace = game:GetService("Workspace")
 local _exp = workspace:GetDescendants()
 local _arg0 = function(object)

@@ -1,4 +1,5 @@
 -- Compiled with roblox-ts v1.2.3
+-- Sword that can damage other players                    //
 local tweenService = game:GetService("TweenService")
 local debris = game:GetService("Debris")
 local sword = Instance.new("Tool")

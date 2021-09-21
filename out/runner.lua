@@ -1,4 +1,5 @@
 -- Compiled with roblox-ts v1.2.3
+-- Loader that lets you quickly run scripts from this repo
 local workspace = game:GetService("Workspace")
 local API = "https://raw.githubusercontent.com/snoo8/scriptsoup/main"
 local defaultHeaders = {

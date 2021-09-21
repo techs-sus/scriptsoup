@@ -1,4 +1,5 @@
 -- Compiled with roblox-ts v1.2.3
+-- Ray tracer                                             //
 local camera = Instance.new("Part")
 camera.CFrame = CFrame.new(20, 10, 15)
 camera.Size = Vector3.new(0.5, 0.5, 0.5)

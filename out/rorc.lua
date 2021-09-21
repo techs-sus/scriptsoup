@@ -1,4 +1,5 @@
 -- Compiled with roblox-ts v1.2.3
+-- Bloated comradio v2 client                             //
 local ms = game:GetService("MessagingService")
 local text = game:GetService("TextService")
 local players = game:GetService("Players")

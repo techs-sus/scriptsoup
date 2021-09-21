@@ -1,4 +1,5 @@
 -- Compiled with roblox-ts v1.2.3
+-- Add bubblechat                                         //
 local chat = game:GetService("Chat")
 chat.BubbleChatEnabled = true
 local function bubblechat(player)
