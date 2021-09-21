@@ -1,3 +1,4 @@
+// Add sunset skybox                                      //
 const sky: Sky = new Instance("Sky");
 sky.SkyboxBk = "http://www.roblox.com/asset/?id=458016711";
 sky.SkyboxDn = "http://www.roblox.com/asset/?id=458016826";

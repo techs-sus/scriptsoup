@@ -1,3 +1,4 @@
+// Loader that lets you quickly run scripts from this repo  
 declare const owner: Player;
 declare const NS: (source: string, parent: Instance) => undefined;
 declare const loadstring: (source: string) => Function;

@@ -1,3 +1,4 @@
+// Give everyone in the server badges in their nametag    //
 const http = game.GetService("HttpService");
 
 interface badge {

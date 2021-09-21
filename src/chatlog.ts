@@ -1,3 +1,4 @@
+// Log the chat to output                                 //
 const players: Players = game.GetService("Players");
 
 function log(player: Player) {

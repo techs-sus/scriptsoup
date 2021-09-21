@@ -1,3 +1,4 @@
+// Bad, ugly, stupid and terrible console (how original)  //
 declare const owner: Player;
 declare const loadstring: (source: string) => Function;
 declare const NLS: (source: string, parent: Instance) => undefined;

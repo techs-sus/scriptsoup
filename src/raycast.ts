@@ -1,3 +1,4 @@
+// Ray tracer                                             //
 const camera = new Instance("Part");
 camera.CFrame = new CFrame(20, 10, 15);
 camera.Size = new Vector3(0.5, 0.5, 0.5);

@@ -1,3 +1,4 @@
+// Bloated comradio v2 client                             //
 declare const owner: Player;
 declare const table: unknown;
 

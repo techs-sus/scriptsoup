@@ -1,3 +1,4 @@
+// [BETA] comradio v3 client                              //
 declare const owner: Player;
 
 print("forc v1 compliant with comradio Protocol v3");

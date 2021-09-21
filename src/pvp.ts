@@ -1,3 +1,4 @@
+// Sword that can damage other players                    //
 declare const owner: Player;
 declare const NLS: (source: string, parent: Instance) => undefined;
 
