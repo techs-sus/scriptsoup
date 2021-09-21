@@ -11,32 +11,10 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>Welcome</h1>
+			<h1>Scripts</h1>
 			<button type="button" onclick="updateList()">Update</button>
 			<dl id="list"></dl>
-			<script>
-				var list = document.getElementById("list");
-				function updateList() {
-					var xhttp = new XMLHttpRequest();
-					xhttp.onreadystatechange = function() {
-						if (this.readyState == 4 && this.status == 200) {
-							list.innerHTML = "";
-							var converted = JSON.parse(this.responseText);
-							converted.forEach(element => {
-								var title =  document.createElement("dt");
-								title.innerHTML = `<a href="${element.html_url}">${element.name}</a>`;
-								var description = document.createElement("dd");
-								description.innerHTML = 'No information is available';
-								list.appendChild(title);
-								list.appendChild(description);
-							});
-						}
-					}
-					xhttp.open("GET", "https://api.github.com/repos/snoo8/scriptsoup/contents/out");
-					xhttp.send();
-				}
-				updateList();
-			</script>
+			<script src="./script.js"></script>
 		</div>
 	</body>
 </html>
