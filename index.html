@@ -12,10 +12,16 @@
   <body>
     <div class="container">
       <h1>Scripts</h1>
+	  <input id="darkModeCheckbox" type="checkbox" onclick="updateDarkMode()">Dark Mode</input> <br/>
       <button type="button" onclick="updateList()">Update</button>
       <dl id="list"></dl>
       <script>
         var list = document.getElementById("list");
+		var darkModeCheckbox = document.getElementById("darkModeCheckbox");
+		var darkMode = localStorage.getItem('dark-theme');
+		var root = document.querySelector(':root');
+		darkModeCheckbox.checked = darkMode;
+		updateDarkModeCSS(darkMode);
         function getRequest(url, callback) {
           var xhttp = new XMLHttpRequest();
           xhttp.onreadystatechange = callback;
@@ -48,6 +54,18 @@
             }
           );
         }
+		function updateDarkModeCSS(checked) {
+			if (checked) {
+				root.classList.add('dark-theme');
+			} else {
+				root.classList.remove('dark-theme');
+			}
+		}
+		function updateDarkMode() {
+			darkMode = !darkMode;
+			updateDarkModeCSS(darkMode);
+			localStorage.setItem('dark-theme', darkMode);
+		}
         updateList();
       </script>
     </div>
