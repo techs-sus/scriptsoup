@@ -30,6 +30,9 @@
                 list.innerHTML = "";
                 var converted = JSON.parse(this.responseText);
                 converted.forEach((element) => {
+				  if (element.name.split('.')[1] !== 'lua') {
+					  continue; // not a script
+				  }
                   var title = document.createElement("dt");
                   title.innerHTML = `<a href="${element.html_url}">${element.name}</a>`;
                   var description = document.createElement("dd");
