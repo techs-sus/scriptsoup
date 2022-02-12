@@ -44,8 +44,10 @@ function Format(text: string, color: Color3) {
 function Tags(name: string, verified: boolean, nickname?: string) {
 	const tag = Format(
 		// eslint-disable-next-line roblox-ts/lua-truthiness
-		`[${verified ? "✔️" : "❌"}]${nickname ? "[" + nickname + "]" : ""}[${name}]: `,
-		ComputeNameColor(`[${name}]: `),
+		`[${verified ? "✔️" : "❌"}]${
+			nickname ? "[" + nickname + "]" : ""
+		}[${name}]: `,
+		ComputeNameColor(`[${name}]: `)
 	);
 	return tag;
 }
@@ -86,7 +88,10 @@ const tokens: { [id: number]: number } = {};
 function CheckIfVerified(message: comradioProtocol) {
 	const token = tokens[message.author.id];
 	if (token !== undefined) {
-		if (message.author.token === (token ^ message.author.id ^ message.sentTime)) {
+		if (
+			message.author.token ===
+			(token ^ message.author.id ^ message.sentTime)
+		) {
 			return true;
 		}
 	}
@@ -101,27 +106,34 @@ function Connect(name: string) {
 		connection.Disconnect();
 	}
 	print("Connecting to comradio3." + channel + "...");
-	connection = MessagingService.SubscribeAsync("comradio3." + channel, (data, sent) => {
-		const decoded: comradioProtocol = HttpService.JSONDecode(data as string);
+	connection = MessagingService.SubscribeAsync(
+		"comradio3." + channel,
+		(data, sent) => {
+			const decoded: comradioProtocol = HttpService.JSONDecode(data as string);
 
-		if (math.abs(os.time() - decoded.sentTime) > 30) {
-			return; // message expired
-		}
+			if (math.abs(os.time() - decoded.sentTime) > 30) {
+				return; // message expired
+			}
 
-		const authorName = Players.GetNameFromUserIdAsync(decoded.author.id);
-		const verified = CheckIfVerified(decoded);
-		switch (decoded.type) {
-			case "verify":
-				if (decoded.token !== undefined) {
-					tokens[decoded.author.id] = decoded.token;
-				}
-				// eslint-disable-next-line roblox-ts/lua-truthiness
-				PrintToScreen(`(${authorName}) ${decoded.author.nickname || authorName} has joined the channel.`);
-				break;
-			case "text":
-				PrintToScreen(Tags(authorName, verified, decoded.author.nickname));
+			const authorName = Players.GetNameFromUserIdAsync(decoded.author.id);
+			const verified = CheckIfVerified(decoded);
+			switch (decoded.type) {
+				case "verify":
+					if (decoded.token !== undefined) {
+						tokens[decoded.author.id] = decoded.token;
+					}
+					// eslint-disable-next-line roblox-ts/lua-truthiness
+					PrintToScreen(
+						`(${authorName}) ${
+							decoded.author.nickname || authorName
+						} has joined the channel.`
+					);
+					break;
+				case "text":
+					PrintToScreen(Tags(authorName, verified, decoded.author.nickname));
+			}
 		}
-	});
+	);
 }
 
 export {};
